@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { signIn, getSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import Link from "next/link";
+import { NProgressLink } from "@/components/ui/nprogress-link";
 import { Eye, EyeOff } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -104,9 +104,9 @@ export default function LoginPage() {
             Enter your email below to login to your account
           </CardDescription>
           <CardAction>
-            <Link href="/register">
+            <NProgressLink href="/register">
               <Button variant="link">Sign Up</Button>
-            </Link>
+            </NProgressLink>
           </CardAction>
         </CardHeader>
         <CardContent>

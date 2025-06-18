@@ -2,10 +2,9 @@
 
 import { useState, useRef } from "react";
 import { useRouter } from "next/navigation";
-import Link from "next/link";
 import { Eye, EyeOff, UploadCloud } from "lucide-react";
 import { upload } from "@vercel/blob/client";
-
+import { NProgressLink } from "@/components/ui/nprogress-link";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -118,9 +117,9 @@ export default function RegisterPage() {
           <CardTitle>Create your account</CardTitle>
           <CardDescription>Fill in the details below to register</CardDescription>
           <CardAction>
-            <Link href="/">
+            <NProgressLink href="/">
               <Button variant="link">Login</Button>
-            </Link>
+            </NProgressLink>
           </CardAction>
         </CardHeader>
         <CardContent>
