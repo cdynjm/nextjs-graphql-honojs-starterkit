@@ -2,8 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { buildSchema, graphql as graphqlExec } from "graphql";
 import { gql } from "graphql-request";
 
-import { userResolver } from "../../resolver/admin/userResolver";
-import { profileResolver } from "../../resolver/admin/profileResolver";
+import { userResolver } from "../../resolver/admin/user-resolver";
 
 const schema = buildSchema(gql`
   #types
@@ -30,29 +29,10 @@ const schema = buildSchema(gql`
     getUserInfo(encrypted_id: String): User
   }
 
-  #mutations
-  type Mutation {
-    createUser(
-      name: String
-      email: String
-      password: String
-      photo: String
-    ): User
-    updateUser(encrypted_id: String, name: String, email: String): User
-    deleteUser(encrypted_id: String): User
-
-    updateProfile(
-      encrypted_id: String
-      name: String
-      email: String
-      password: String
-    ): User
-  }
 `);
 
 const rootValue = {
   ...userResolver,
-  ...profileResolver,
 };
 
 export async function POST(req: NextRequest) {

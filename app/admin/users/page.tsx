@@ -42,6 +42,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
+import axios from "axios";
 
 type CreateUserForm = {
   name: string;
@@ -72,6 +73,8 @@ export default function UsersPage() {
     "/graphql/schema/admin",
     session?.token
   );
+
+  const endpoint = "/api/admin/users" as string;
 
   const fetchUsers = async ({
     queryKey,
@@ -138,33 +141,14 @@ export default function UsersPage() {
 
   const onCreateSubmit: SubmitHandler<CreateUserForm> = async (data) => {
     try {
+
       let imageUrl = "";
+
       if (selectedFile) {
         imageUrl = await uploadImage(selectedFile);
       }
 
-      const mutation = gql`
-        mutation (
-          $name: String
-          $email: String
-          $password: String
-          $photo: String
-        ) {
-          createUser(
-            name: $name
-            email: $email
-            password: $password
-            photo: $photo
-          ) {
-            name
-            email
-            password
-            photo
-          }
-        }
-      `;
-
-      await graphQLClient.request(mutation, {
+      const res = await axios.post(endpoint, {
         name: data.name,
         email: data.email,
         password: data.password,
@@ -177,7 +161,7 @@ export default function UsersPage() {
       refetch();
 
       toast("Created successfully", {
-        description: "User has been created with avatar",
+        description: res.data.message,
         position: "top-right",
         action: {
           label: "Close",
@@ -210,17 +194,8 @@ export default function UsersPage() {
   const onUpdateSubmit: SubmitHandler<UpdateUserForm> = async (data) => {
     if (!editUser) return;
     try {
-      const mutation = gql`
-        mutation ($encrypted_id: String, $name: String, $email: String) {
-          updateUser(encrypted_id: $encrypted_id, name: $name, email: $email) {
-            encrypted_id
-            name
-            email
-          }
-        }
-      `;
-
-      await graphQLClient.request(mutation, {
+      
+      const res = await axios.put(endpoint, {
         encrypted_id: data.encryptedID,
         name: data.name,
         email: data.email,
@@ -231,7 +206,7 @@ export default function UsersPage() {
       refetch();
 
       toast("Updated successfully", {
-        description: "User information has been updated",
+        description: res.data.message,
         position: "top-right",
         action: {
           label: "Close",
@@ -265,16 +240,11 @@ export default function UsersPage() {
   const onDeleteSubmit: SubmitHandler<DeleteUserForm> = async (data) => {
     if (!deleteUser) return;
     try {
-      const mutation = gql`
-        mutation ($encrypted_id: String) {
-          deleteUser(encrypted_id: $encrypted_id) {
-            encrypted_id
-          }
-        }
-      `;
-
-      await graphQLClient.request(mutation, {
-        encrypted_id: data.encryptedID,
+      
+      const res = await axios.delete(endpoint, {
+        data: {
+          encrypted_id: data.encryptedID,
+        },
       });
 
       resetDeleteForm();
@@ -282,7 +252,7 @@ export default function UsersPage() {
       refetch();
 
       toast("Deleted successfully", {
-        description: "User information has been deleted",
+        description: res.data.message,
         position: "top-right",
         action: {
           label: "Close",

@@ -5,13 +5,12 @@ import { useForm, SubmitHandler } from "react-hook-form";
 import { useSession, getSession } from "next-auth/react";
 
 import { usePageTitle } from "@/components/page-title-context";
-import { getGraphQLClient } from "@/lib/graphql-client";
-import { gql } from "graphql-request";
 
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
+import axios from "axios";
 
 type UpdateUserForm = {
   encryptedID: string;
@@ -29,10 +28,7 @@ export default function ProfilePage() {
     return () => setTitle("");
   }, [setTitle]);
 
-  const graphQLClient = getGraphQLClient(
-    "/graphql/schema/admin/",
-    session?.token
-  );
+  const endpoint = "/api/admin/profile" as string;
 
   const {
     register,
@@ -49,39 +45,18 @@ export default function ProfilePage() {
 
   const onUpdateSubmit: SubmitHandler<UpdateUserForm> = async (data) => {
     try {
-      const mutation = gql`
-        mutation (
-          $encrypted_id: String
-          $name: String!
-          $email: String!
-          $password: String
-        ) {
-          updateProfile(
-            encrypted_id: $encrypted_id
-            name: $name
-            email: $email
-            password: $password
-          ) {
-            encrypted_id
-            name
-            email
-            password
-          }
-        }
-      `;
-
-      await graphQLClient.request(mutation, {
+      
+      const res = await axios.put(endpoint, {
         encrypted_id: data.encryptedID,
         name: data.name,
         email: data.email,
-        password: data.password || undefined,
+        password: data.password
       });
 
       await getSession();
 
       toast("Updated successfully", {
-        description:
-          "User information has been updated. The page will reload to refresh your session.",
+        description: res.data.message,
         position: "top-right",
         action: {
           label: "Close",
