@@ -1,70 +1,90 @@
 {
-  "version": "5",
-  "dialect": "mysql",
-  "id": "9a487809-6518-4deb-812e-6f5eea22cea6",
+  "id": "e01ccbd4-38cc-4b9a-badf-a3c8591a8fe9",
   "prevId": "00000000-0000-0000-0000-000000000000",
+  "version": "7",
+  "dialect": "postgresql",
   "tables": {
-    "users_table": {
-      "name": "users_table",
+    "public.users": {
+      "name": "users",
+      "schema": "",
       "columns": {
         "id": {
           "name": "id",
           "type": "serial",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": true
+          "primaryKey": true,
+          "notNull": true
         },
         "name": {
           "name": "name",
           "type": "varchar(255)",
           "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
+          "notNull": false
         },
         "email": {
           "name": "email",
           "type": "varchar(255)",
           "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
+          "notNull": false
         },
         "password": {
           "name": "password",
           "type": "varchar(255)",
           "primaryKey": false,
+          "notNull": false
+        },
+        "role": {
+          "name": "role",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "photo": {
+          "name": "photo",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
           "notNull": false,
-          "autoincrement": false
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
         }
       },
       "indexes": {},
       "foreignKeys": {},
-      "compositePrimaryKeys": {
-        "users_table_id": {
-          "name": "users_table_id",
-          "columns": [
-            "id"
-          ]
-        }
-      },
+      "compositePrimaryKeys": {},
       "uniqueConstraints": {
-        "users_table_email_unique": {
-          "name": "users_table_email_unique",
+        "users_email_unique": {
+          "name": "users_email_unique",
+          "nullsNotDistinct": false,
           "columns": [
             "email"
           ]
         }
       },
-      "checkConstraint": {}
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
     }
   },
+  "enums": {},
+  "schemas": {},
+  "sequences": {},
+  "roles": {},
+  "policies": {},
   "views": {},
   "_meta": {
+    "columns": {},
     "schemas": {},
-    "tables": {},
-    "columns": {}
-  },
-  "internal": {
-    "tables": {},
-    "indexes": {}
+    "tables": {}
   }
 }

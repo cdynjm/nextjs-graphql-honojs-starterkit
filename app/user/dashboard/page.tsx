@@ -47,7 +47,7 @@ export default function DashboardPage() {
       <p>User ID: {session?.user.id}</p>
       <p>Name: {session?.user.name}</p>
       <p>Role: {session?.user.role}</p>
-      <p>Created At: {session?.user.created_at}</p>
+      <p>Created At: {session?.user.created_at ? session.user.created_at.toString() : ""}</p>
       <p>Email: {session?.user.email}</p>
 
       <h2 className="mt-6 text-xl font-semibold">All Users</h2>

@@ -39,7 +39,7 @@ export const authOptions: NextAuthOptions = {
           name: user.name,
           email: user.email,
           role: user.role ?? 0,
-          created_at: user.created_at || "",
+          created_at: user.created_at || new Date(0),
         };
       },
     }),
@@ -74,7 +74,7 @@ export const authOptions: NextAuthOptions = {
           token.name = updatedUser.name;
           token.email = updatedUser.email;
           token.role = updatedUser.role ?? 0;
-          token.created_at = updatedUser.created_at || "";
+          token.created_at = updatedUser.created_at || new Date(0);
         }
       }
 
@@ -90,7 +90,7 @@ export const authOptions: NextAuthOptions = {
         session.user.name = token.name as string;
         session.user.email = token.email as string;
         session.user.role = token.role as number;
-        session.user.created_at = token.created_at as string;
+        session.user.created_at = token.created_at as Date;
         session.token = token.accessToken as string;
 
         function omit<T extends Record<string, unknown>, K extends keyof T>(
