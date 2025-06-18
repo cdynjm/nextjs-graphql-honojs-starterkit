@@ -4,6 +4,7 @@ import { db } from "@/lib/db";
 import { usersTable } from "@/lib/db/schema";
 import { eq } from "drizzle-orm";
 import bcrypt from "bcrypt";
+import { signJwt } from "./jwt";
 
 import { generateKey, encrypt } from "./crypto";
 
@@ -43,6 +44,7 @@ export const authOptions: NextAuthOptions = {
       },
     }),
   ],
+
   session: {
     strategy: "jwt",
     maxAge: 60 * 120,
@@ -78,6 +80,7 @@ export const authOptions: NextAuthOptions = {
 
       return token;
     },
+
     async session({ session, token }) {
       if (session.user) {
         const key = await generateKey();
@@ -89,6 +92,19 @@ export const authOptions: NextAuthOptions = {
         session.user.role = token.role as number;
         session.user.created_at = token.created_at as string;
         session.token = token.accessToken as string;
+
+        function omit<T extends Record<string, unknown>, K extends keyof T>(
+          obj: T,
+          keys: K[]
+        ): Omit<T, K> {
+          const clone = { ...obj };
+          for (const key of keys) {
+            delete clone[key];
+          }
+          return clone;
+        }
+
+        session.bearer = signJwt(omit(token, ["exp", "iat", "jti"]));
       }
       return session;
     },

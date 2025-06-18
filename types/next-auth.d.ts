@@ -12,6 +12,7 @@ declare module "next-auth" {
       updated_at: string;
     } & DefaultSession["user"];
     token: string;
+    bearer: string;
   }
 
   interface User extends DefaultUser {

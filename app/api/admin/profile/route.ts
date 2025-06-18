@@ -5,8 +5,10 @@ import { db } from "@/lib/db"; // adjust path
 import { usersTable } from "@/lib/db/schema";
 import { decrypt, generateKey } from "@/lib/crypto";
 import { eq } from "drizzle-orm";
+import { authMiddlewareJWT } from "../../middleware/auth-middleware-jwt";
 
 const app = new Hono().basePath("/api/admin/profile");
+app.use("*", authMiddlewareJWT);
 
 app.put("/", async (c) => {
   try {

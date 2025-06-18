@@ -45,13 +45,20 @@ export default function ProfilePage() {
 
   const onUpdateSubmit: SubmitHandler<UpdateUserForm> = async (data) => {
     try {
-      
-      const res = await axios.put(endpoint, {
-        encrypted_id: data.encryptedID,
-        name: data.name,
-        email: data.email,
-        password: data.password
-      });
+      const res = await axios.put(
+        endpoint,
+        {
+          encrypted_id: data.encryptedID,
+          name: data.name,
+          email: data.email,
+          password: data.password,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${session?.bearer}`,
+          },
+        }
+      );
 
       await getSession();
 

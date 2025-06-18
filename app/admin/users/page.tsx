@@ -141,19 +141,26 @@ export default function UsersPage() {
 
   const onCreateSubmit: SubmitHandler<CreateUserForm> = async (data) => {
     try {
-
       let imageUrl = "";
 
       if (selectedFile) {
         imageUrl = await uploadImage(selectedFile);
       }
 
-      const res = await axios.post(endpoint, {
-        name: data.name,
-        email: data.email,
-        password: data.password,
-        photo: imageUrl,
-      });
+      const res = await axios.post(
+        endpoint,
+        {
+          name: data.name,
+          email: data.email,
+          password: data.password,
+          photo: imageUrl,
+        },
+        {
+          headers: {
+             Authorization: `Bearer ${session?.bearer}`,
+          },
+        }
+      );
 
       resetCreateForm();
       setIsCreateOpen(false);
@@ -194,12 +201,19 @@ export default function UsersPage() {
   const onUpdateSubmit: SubmitHandler<UpdateUserForm> = async (data) => {
     if (!editUser) return;
     try {
-      
-      const res = await axios.put(endpoint, {
-        encrypted_id: data.encryptedID,
-        name: data.name,
-        email: data.email,
-      });
+      const res = await axios.put(
+        endpoint,
+        {
+          encrypted_id: data.encryptedID,
+          name: data.name,
+          email: data.email,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${session?.bearer}`,
+          },
+        }
+      );
 
       resetUpdateForm();
       setEditUser(null);
@@ -240,10 +254,12 @@ export default function UsersPage() {
   const onDeleteSubmit: SubmitHandler<DeleteUserForm> = async (data) => {
     if (!deleteUser) return;
     try {
-      
       const res = await axios.delete(endpoint, {
         data: {
           encrypted_id: data.encryptedID,
+        },
+        headers: {
+           Authorization: `Bearer ${session?.bearer}`,
         },
       });
 
