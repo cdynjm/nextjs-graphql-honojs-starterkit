@@ -157,7 +157,7 @@ export default function UsersPage() {
         },
         {
           headers: {
-             Authorization: `Bearer ${session?.bearer}`,
+            Authorization: `Bearer ${session?.bearer}`,
           },
         }
       );
@@ -176,7 +176,18 @@ export default function UsersPage() {
         },
       });
     } catch (error) {
-      console.error("Create user failed", error);
+      let message = "Something went wrong";
+      if (axios.isAxiosError(error)) {
+        message = error.response?.data?.error;
+      }
+      toast("Error occurred", {
+        description: message,
+        position: "top-right",
+        action: {
+          label: "Close",
+          onClick: () => {},
+        },
+      });
     }
   };
 
@@ -228,7 +239,18 @@ export default function UsersPage() {
         },
       });
     } catch (error) {
-      console.error("Update user failed", error);
+      let message = "Something went wrong";
+      if (axios.isAxiosError(error)) {
+        message = error.response?.data?.error;
+      }
+      toast("Error occurred", {
+        description: message,
+        position: "top-right",
+        action: {
+          label: "Close",
+          onClick: () => {},
+        },
+      });
     }
   };
 
@@ -259,7 +281,7 @@ export default function UsersPage() {
           encrypted_id: data.encryptedID,
         },
         headers: {
-           Authorization: `Bearer ${session?.bearer}`,
+          Authorization: `Bearer ${session?.bearer}`,
         },
       });
 

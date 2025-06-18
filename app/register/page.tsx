@@ -52,7 +52,11 @@ export default function RegisterPage() {
     password: "",
     avatar: "",
   });
-  const [formErrors, setFormErrors] = useState<{ name?: string; email?: string; password?: string }>({});
+  const [formErrors, setFormErrors] = useState<{
+    name?: string;
+    email?: string;
+    password?: string;
+  }>({});
   const [loading, setLoading] = useState(false);
   const [submitError, setSubmitError] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -65,7 +69,8 @@ export default function RegisterPage() {
     const errors: { name?: string; email?: string; password?: string } = {};
     if (!form.name.trim()) errors.name = "Name is required.";
     if (!form.email.trim()) errors.email = "Email is required.";
-    else if (!/\S+@\S+\.\S+/.test(form.email)) errors.email = "Email is invalid.";
+    else if (!/\S+@\S+\.\S+/.test(form.email))
+      errors.email = "Email is invalid.";
     if (!form.password.trim()) errors.password = "Password is required.";
     setFormErrors(errors);
     return Object.keys(errors).length === 0;
@@ -73,8 +78,8 @@ export default function RegisterPage() {
 
   const uploadImage = async (file: File) => {
     const blob = await upload(file.name, file, {
-      access: 'public',
-      handleUploadUrl: '/api/guest/upload',
+      access: "public",
+      handleUploadUrl: "/api/guest/upload",
     });
     return blob.url;
   };
@@ -97,14 +102,16 @@ export default function RegisterPage() {
         body: JSON.stringify({ ...form, avatar: imageUrl }),
       });
 
-      if (response.ok) {
-        router.push("/");
-      } else {
+      if (!response.ok) {
         const data = await response.json();
         setSubmitError(data.message || "Registration failed.");
+        return;
       }
-    } catch {
-      setSubmitError("Registration failed. Please try again.");
+      
+      router.push("/");
+    } catch (err) {
+      console.error(err);
+      setSubmitError(err as string);
     } finally {
       setLoading(false);
     }
@@ -115,7 +122,9 @@ export default function RegisterPage() {
       <Card className="w-full max-w-sm">
         <CardHeader>
           <CardTitle>Create your account</CardTitle>
-          <CardDescription>Fill in the details below to register</CardDescription>
+          <CardDescription>
+            Fill in the details below to register
+          </CardDescription>
           <CardAction>
             <NProgressLink href="/">
               <Button variant="link">Login</Button>
@@ -174,7 +183,9 @@ export default function RegisterPage() {
                   onChange={(e) => setForm({ ...form, name: e.target.value })}
                   className={formErrors.name ? "border-red-600" : ""}
                 />
-                {formErrors.name && <p className="text-sm text-red-600">{formErrors.name}</p>}
+                {formErrors.name && (
+                  <p className="text-sm text-red-600">{formErrors.name}</p>
+                )}
               </div>
 
               {/* Email */}
@@ -187,7 +198,9 @@ export default function RegisterPage() {
                   onChange={(e) => setForm({ ...form, email: e.target.value })}
                   className={formErrors.email ? "border-red-600" : ""}
                 />
-                {formErrors.email && <p className="text-sm text-red-600">{formErrors.email}</p>}
+                {formErrors.email && (
+                  <p className="text-sm text-red-600">{formErrors.email}</p>
+                )}
               </div>
 
               {/* Password */}
@@ -197,7 +210,9 @@ export default function RegisterPage() {
                   id="password"
                   type={showPassword ? "text" : "password"}
                   value={form.password}
-                  onChange={(e) => setForm({ ...form, password: e.target.value })}
+                  onChange={(e) =>
+                    setForm({ ...form, password: e.target.value })
+                  }
                   className={formErrors.password ? "border-red-600" : ""}
                 />
                 <button
@@ -206,15 +221,27 @@ export default function RegisterPage() {
                   className="absolute right-3 top-[30px] text-gray-500 hover:text-gray-700"
                   aria-label={showPassword ? "Hide password" : "Show password"}
                 >
-                  {showPassword ? <EyeOff className="w-5 h-auto" /> : <Eye className="w-5 h-auto" />}
+                  {showPassword ? (
+                    <EyeOff className="w-5 h-auto" />
+                  ) : (
+                    <Eye className="w-5 h-auto" />
+                  )}
                 </button>
-                {formErrors.password && <p className="text-sm text-red-600">{formErrors.password}</p>}
+                {formErrors.password && (
+                  <p className="text-sm text-red-600">{formErrors.password}</p>
+                )}
               </div>
             </div>
 
-            {submitError && <p className="mb-4 text-sm text-red-600">{submitError}</p>}
+            {submitError && (
+              <p className="mb-4 text-sm text-red-600">{submitError}</p>
+            )}
 
-            <Button type="submit" className="w-full flex items-center justify-center" disabled={loading}>
+            <Button
+              type="submit"
+              className="w-full flex items-center justify-center"
+              disabled={loading}
+            >
               {loading && <Spinner />}
               {loading ? "Registering..." : "Register"}
             </Button>

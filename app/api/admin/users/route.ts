@@ -11,23 +11,29 @@ const app = new Hono().basePath("/api/admin/users");
 app.use("*", authMiddlewareJWT);
 
 app.post("/", async (c) => {
-  const { name, email, password, photo } = await c.req.json();
+  try {
+    const { name, email, password, photo } = await c.req.json();
 
-  const hashedPassword = await bcrypt.hash(password, 10);
+    const hashedPassword = await bcrypt.hash(password, 10);
 
-  await db.insert(usersTable).values({
-    name,
-    email,
-    password: hashedPassword,
-    photo,
-    role: 1,
-  });
+    await db.insert(usersTable).values({
+      name,
+      email,
+      password: hashedPassword,
+      photo,
+      role: 1,
+    });
 
-  return c.json({ message: "User has been created" }, 200);
+    return c.json({ message: "User has been created" }, 200);
+  } catch {
+    return c.json({ error: "Email is already exist" }, 500);
+  }
 });
 
+
 app.put("/", async (c) => {
-  const { encrypted_id, name, email } = await c.req.json();
+  try {
+    const { encrypted_id, name, email } = await c.req.json();
 
   const key = await generateKey();
   const decryptedID = await decrypt(encrypted_id, key);
@@ -38,6 +44,9 @@ app.put("/", async (c) => {
     .where(eq(usersTable.id, Number(decryptedID)));
 
   return c.json({ message: "User has been updated" }, 200);
+  } catch {
+     return c.json({ error: "Email is already exist" }, 500);
+  }
 });
 
 app.delete("/", async (c) => {

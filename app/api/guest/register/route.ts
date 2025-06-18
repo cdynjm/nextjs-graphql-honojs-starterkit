@@ -4,18 +4,28 @@ import { db } from "@/lib/db";
 import { usersTable } from "@/lib/db/schema";
 
 export async function POST(req: Request) {
-  const { name, email, password, avatar } = await req.json();
+  try {
+    const { name, email, password, avatar } = await req.json();
 
-  const hashedPassword = await bcrypt.hash(password, 10);
+    const hashedPassword = await bcrypt.hash(password, 10);
+    
+    await db.insert(usersTable).values({
+      name: name,
+      email: email,
+      password: hashedPassword,
+      role: 1,
+      photo: avatar,
+    });
 
-  // Insert new user
-  await db.insert(usersTable).values({
-    name: name,
-    email: email,
-    password: hashedPassword,
-    role: 1,
-    photo: avatar
-  });
-
-  return NextResponse.json({ success: true });
+    return NextResponse.json({ success: true });
+  } catch (error) {
+    console.error(error);
+    return NextResponse.json(
+      {
+        success: false,
+        message: "Email is already exists",
+      },
+      { status: 500 }
+    );
+  }
 }
