@@ -36,12 +36,12 @@ app.put("/", async (c) => {
     const { encrypted_id, name, email } = await c.req.json();
 
   const key = await generateKey();
-  const decryptedID = await decrypt(encrypted_id, key);
+  const decrypted_id = await decrypt(encrypted_id, key);
 
   await db
     .update(usersTable)
     .set({ name, email })
-    .where(eq(usersTable.id, Number(decryptedID)));
+    .where(eq(usersTable.id, Number(decrypted_id)));
 
   return c.json({ message: "User has been updated" }, 200);
   } catch {
@@ -53,9 +53,9 @@ app.delete("/", async (c) => {
   const { encrypted_id } = await c.req.json();
 
   const key = await generateKey();
-  const decryptedID = await decrypt(encrypted_id, key);
+  const decrypted_id = await decrypt(encrypted_id, key);
 
-  await db.delete(usersTable).where(eq(usersTable.id, Number(decryptedID)));
+  await db.delete(usersTable).where(eq(usersTable.id, Number(decrypted_id)));
 
   return c.json({ message: "User has been deleted" }, 200);
 });

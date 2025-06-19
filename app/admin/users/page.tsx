@@ -51,13 +51,13 @@ type CreateUserForm = {
 };
 
 type UpdateUserForm = {
-  encryptedID: string;
+  encrypted_id: string;
   name: string;
   email: string;
 };
 
 type DeleteUserForm = {
-  encryptedID: string;
+  encrypted_id: string;
 };
 
 export default function UsersPage() {
@@ -150,9 +150,7 @@ export default function UsersPage() {
       const res = await axios.post(
         endpoint,
         {
-          name: data.name,
-          email: data.email,
-          password: data.password,
+          ...data,
           photo: imageUrl,
         },
         {
@@ -201,7 +199,7 @@ export default function UsersPage() {
 
   useEffect(() => {
     if (editUser) {
-      setUpdateValue("encryptedID", editUser.encrypted_id);
+      setUpdateValue("encrypted_id", editUser.encrypted_id);
       setUpdateValue("name", editUser.name);
       setUpdateValue("email", editUser.email);
     } else {
@@ -215,9 +213,7 @@ export default function UsersPage() {
       const res = await axios.put(
         endpoint,
         {
-          encrypted_id: data.encryptedID,
-          name: data.name,
-          email: data.email,
+          ...data
         },
         {
           headers: {
@@ -267,7 +263,7 @@ export default function UsersPage() {
 
   useEffect(() => {
     if (deleteUser) {
-      setDeleteValue("encryptedID", deleteUser.encrypted_id);
+      setDeleteValue("encrypted_id", deleteUser.encrypted_id);
     } else {
       resetDeleteForm();
     }
@@ -278,7 +274,7 @@ export default function UsersPage() {
     try {
       const res = await axios.delete(endpoint, {
         data: {
-          encrypted_id: data.encryptedID,
+          ...data
         },
         headers: {
           Authorization: `Bearer ${session?.bearer}`,

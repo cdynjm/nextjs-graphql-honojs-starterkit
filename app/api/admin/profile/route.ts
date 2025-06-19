@@ -15,7 +15,7 @@ app.put("/", async (c) => {
     const { encrypted_id, name, email, password } = await c.req.json();
 
     const key = await generateKey();
-    const decryptedID = await decrypt(encrypted_id, key);
+    const decrypted_id = await decrypt(encrypted_id, key);
 
     const updateData: Partial<{
       name: string;
@@ -34,7 +34,7 @@ app.put("/", async (c) => {
     await db
       .update(usersTable)
       .set(updateData)
-      .where(eq(usersTable.id, Number(decryptedID)));
+      .where(eq(usersTable.id, Number(decrypted_id)));
 
     return c.json(
       {

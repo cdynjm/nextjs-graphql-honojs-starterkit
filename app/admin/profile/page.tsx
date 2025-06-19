@@ -13,7 +13,7 @@ import { toast } from "sonner";
 import axios from "axios";
 
 type UpdateUserForm = {
-  encryptedID: string;
+  encrypted_id: string;
   name: string;
   email: string;
   password: string;
@@ -38,7 +38,7 @@ export default function ProfilePage() {
   } = useForm<UpdateUserForm>();
 
   useEffect(() => {
-    setValue("encryptedID", session?.user.id ?? "");
+    setValue("encrypted_id", session?.user.id ?? "");
     setValue("name", session?.user.name ?? "");
     setValue("email", session?.user.email ?? "");
   }, [setValue, session]);
@@ -48,10 +48,7 @@ export default function ProfilePage() {
       const res = await axios.put(
         endpoint,
         {
-          encrypted_id: data.encryptedID,
-          name: data.name,
-          email: data.email,
-          password: data.password,
+          ...data
         },
         {
           headers: {
@@ -90,7 +87,7 @@ export default function ProfilePage() {
       </div>
 
       <form onSubmit={handleSubmit(onUpdateSubmit)} className="space-y-4">
-        <input type="hidden" {...register("encryptedID")} />
+        <input type="hidden" {...register("encrypted_id")} />
 
         <div>
           <Label htmlFor="name" className="mb-2">
