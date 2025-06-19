@@ -27,7 +27,7 @@ export default function UserInfoPage({
   }, [setTitle]);
 
   const graphQLClient = getGraphQLClient(
-    "/graphql/schema/admin",
+    "/graphql/admin",
     session?.token
   );
 

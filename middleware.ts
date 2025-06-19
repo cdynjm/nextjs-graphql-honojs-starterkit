@@ -4,8 +4,8 @@ import { NextResponse } from "next/server";
 
 // Role-based route access map
 const roleAccessMap: Record<number, string[]> = {
-  1: ["/admin", "/graphql/schema/admin", "/graphql/resolver/admin", "/api/admin/"], // Admin
-  2: ["/user", "/graphql/schema/user", "/graphql/resolver/user", "/api/user/"],  // User
+  1: ["/admin", "/graphql/admin", "/graphql/resolver/admin", "/api/admin/"], // Admin
+  2: ["/user", "/graphql/user", "/graphql/resolver/user", "/api/user/"],  // User
 };
 
 export default withAuth(
@@ -48,7 +48,7 @@ export const config = {
   matcher: [
     "/", "/register", //GUEST ROUTES
     "/admin/:path*", "/user/:path*", // AUTHENTICATED ROUTES
-    "/graphql/schema/admin/:path*", "/graphql/schema/user/:path*", // GRAPHQL SCHEMA ROUTES FOR AUTHENTICATED USERS
+    "/graphql/admin/:path*", "/graphql/user/:path*", // GRAPHQL SCHEMA ROUTES FOR AUTHENTICATED USERS
     "/graphql/resolver/admin/:path*", "/graphql/resolver/user/:path*",  // GRAPHQL RESOLVER FOR AUTHENTICATED USERS
     "/api/admin/:path*", "/api/user/:path*" // API ROUTES FOR AUTHENTICATED USERS
   ],
