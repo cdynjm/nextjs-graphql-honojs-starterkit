@@ -316,7 +316,7 @@ export default function UsersPage() {
           if (!open) resetCreateForm();
         }}
       >
-        <DialogContent className="sm:max-w-[425px] max-h-[150vh] overflow-y-auto">
+        <DialogContent className="sm:max-w-[425px] max-h-[90vh] overflow-y-auto">
           <form onSubmit={handleCreateSubmit(onCreateSubmit)}>
             <DialogHeader>
               <DialogTitle>Create User</DialogTitle>
@@ -444,7 +444,7 @@ export default function UsersPage() {
         open={!!editUser}
         onOpenChange={(open) => !open && setEditUser(null)}
       >
-        <DialogContent className="sm:max-w-[425px] max-h-[150vh] overflow-y-auto">
+        <DialogContent className="sm:max-w-[425px] max-h-[90vh] overflow-y-auto">
           <form onSubmit={handleUpdateSubmit(onUpdateSubmit)}>
             <DialogHeader>
               <DialogTitle>Update User</DialogTitle>

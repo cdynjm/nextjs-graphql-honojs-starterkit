@@ -23,7 +23,7 @@ export default withAuth(
     }
 
     if (!token || typeof token.role !== "number") {
-      return NextResponse.redirect(new URL("/unauthorized", req.url));
+      return NextResponse.redirect(new URL("/", req.url));
     }
 
     const role = token.role;
@@ -31,7 +31,7 @@ export default withAuth(
     const isAllowed = allowedPrefixes.some((prefix) => pathname.startsWith(prefix));
 
     if (!isAllowed) {
-      return NextResponse.redirect(new URL("/unauthorized", req.url));
+      return NextResponse.redirect(new URL("/", req.url));
     }
 
     return NextResponse.next();
