@@ -23,7 +23,7 @@ export function AuthenticatedLayout({
           <div className="flex flex-col w-full bg-white md:m-2 shadow rounded-md">
             <PageTitleProvider>
               <AppTopbar />
-              <main className="flex-1">{children}</main>
+              <main className="flex-1 md:mb-0 mb-12">{children}</main>
               <NavbarFix />
               <Toaster />
             </PageTitleProvider>
