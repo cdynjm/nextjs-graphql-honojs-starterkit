@@ -1,11 +1,11 @@
 export interface User {
-  id: number;
+  _id: string;
   encrypted_id: string;
   name: string;
   email: string;
   password: string;
   role: number;
   photo: string;
-  created_at: string;
-  updated_at: string;
+  created_at: Date;
+  updated_at: Date;
 }

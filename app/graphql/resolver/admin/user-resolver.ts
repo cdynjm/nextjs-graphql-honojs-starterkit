@@ -1,41 +1,49 @@
 // userResolvers.ts
-import { db } from "@/lib/db";
-import { usersTable } from "@/lib/db/schema";
-import { eq } from "drizzle-orm";
+import { connectToDatabase } from "@/lib/db/mongodb";
+import { User} from "@/lib/db/models/user";
+import { User as UserCollection } from "@/types/user";
 import { encrypt, decrypt, generateKey } from "@/lib/crypto";
-import { sql } from "drizzle-orm";
+import { Types } from "mongoose";
 
 export const userResolver = {
   getUsers: async ({ limit, offset }: { limit: number; offset: number }) => {
+    await connectToDatabase();
     const key = await generateKey();
 
-    const [users, totalCountResult] = await Promise.all([
-      db.select().from(usersTable).limit(limit).offset(offset),
-      db.select({ count: sql<number>`COUNT(*)` }).from(usersTable),
+    const [users, totalCount] = await Promise.all([
+      User.find({})
+        .skip(offset)
+        .limit(limit)
+        .sort({ created_at: -1 })
+        .lean() as unknown as UserCollection[],
+
+      User.countDocuments({}),
     ]);
 
     const encryptedUsers = await Promise.all(
       users.map(async (user) => {
-        const encryptedId = await encrypt(user.id.toString(), key);
-        return { ...user, encrypted_id: encryptedId };
+        const encryptedId = await encrypt(user._id.toString(), key);
+        return {
+          ...user,
+          encrypted_id: encryptedId,
+        };
       })
     );
 
     return {
       users: encryptedUsers,
-      totalCount: Number(totalCountResult[0].count),
+      totalCount,
     };
   },
 
   getUserInfo: async ({ encrypted_id }: { encrypted_id: string }) => {
+    await connectToDatabase();
     const key = await generateKey();
     const decryptedID = await decrypt(encrypted_id, key);
-    const user = await db
-      .select()
-      .from(usersTable)
-      .where(eq(usersTable.id, Number(decryptedID)))
-      .limit(1);
 
-    return user[0];
-  }
+    if (!Types.ObjectId.isValid(decryptedID)) return null;
+
+    const user = await User.findById(decryptedID).lean();
+    return user ?? null;
+  },
 };

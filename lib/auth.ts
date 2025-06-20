@@ -1,12 +1,11 @@
 import type { NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
-import { db } from "@/lib/db";
-import { usersTable } from "@/lib/db/schema";
-import { eq } from "drizzle-orm";
+import { connectToDatabase } from "./db/mongodb";
+import { User } from "./db/models/user";
 import bcrypt from "bcrypt";
 import { signJwt } from "./jwt";
-
 import { generateKey, encrypt } from "./crypto";
+import { User as UserCollection } from "@/types/user";
 
 export const authOptions: NextAuthOptions = {
   providers: [
@@ -19,23 +18,16 @@ export const authOptions: NextAuthOptions = {
       async authorize(credentials) {
         if (!credentials?.email || !credentials?.password) return null;
 
-        const userResult = await db
-          .select()
-          .from(usersTable)
-          .where(eq(usersTable.email, credentials.email))
-          .limit(1);
+        await connectToDatabase();
 
-        const user = userResult[0];
+        const user = await User.findOne({ email: credentials.email }).lean() as unknown as UserCollection | null;
         if (!user || typeof user.password !== "string") return null;
 
-        const isValid = await bcrypt.compare(
-          credentials.password,
-          user.password
-        );
+        const isValid = await bcrypt.compare(credentials.password, user.password);
         if (!isValid) return null;
 
         return {
-          id: user.id.toString(),
+          id: user._id.toString(),
           name: user.name,
           email: user.email,
           role: user.role ?? 0,
@@ -63,13 +55,14 @@ export const authOptions: NextAuthOptions = {
         token.created_at = user.created_at;
         token.accessToken = process.env.NEXTAUTH_ACCESSTOKEN || "";
       } else if (token?.id) {
-        const userResult = await db
-          .select()
-          .from(usersTable)
-          .where(eq(usersTable.id, parseInt(token.id)))
-          .limit(1);
+        await connectToDatabase();
+        const updatedUser = await User.findById(token.id).lean() as {
+          name: string;
+          email: string;
+          role?: number;
+          created_at?: Date;
+        } | null;
 
-        const updatedUser = userResult[0];
         if (updatedUser) {
           token.name = updatedUser.name;
           token.email = updatedUser.email;
@@ -77,7 +70,6 @@ export const authOptions: NextAuthOptions = {
           token.created_at = updatedUser.created_at || new Date(0);
         }
       }
-
       return token;
     },
 

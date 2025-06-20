@@ -1,10 +1,10 @@
 import { Hono } from "hono";
 import { handle } from "hono/vercel";
 import bcrypt from "bcrypt";
-import { db } from "@/lib/db"; // adjust path
-import { usersTable } from "@/lib/db/schema";
+import { connectToDatabase } from "@/lib/db/mongodb";
+import { User} from "@/lib/db/models/user";
 import { decrypt, generateKey } from "@/lib/crypto";
-import { eq } from "drizzle-orm";
+import { Types } from "mongoose";
 import { authMiddlewareJWT } from "../../middleware/auth-middleware-jwt";
 
 const app = new Hono().basePath("/api/admin/profile");
@@ -12,10 +12,15 @@ app.use("*", authMiddlewareJWT);
 
 app.put("/", async (c) => {
   try {
-    const { encrypted_id, name, email, password } = await c.req.json();
+    await connectToDatabase();
 
+    const { encrypted_id, name, email, password } = await c.req.json();
     const key = await generateKey();
     const decrypted_id = await decrypt(encrypted_id, key);
+
+    if (!Types.ObjectId.isValid(decrypted_id)) {
+      return c.json({ error: "Invalid user ID" }, 400);
+    }
 
     const updateData: Partial<{
       name: string;
@@ -31,10 +36,7 @@ app.put("/", async (c) => {
       updateData.password = hashedPassword;
     }
 
-    await db
-      .update(usersTable)
-      .set(updateData)
-      .where(eq(usersTable.id, Number(decrypted_id)));
+    await User.findByIdAndUpdate(decrypted_id, updateData);
 
     return c.json(
       {
@@ -44,7 +46,7 @@ app.put("/", async (c) => {
       200
     );
   } catch (e) {
-    console.error(e);
+    console.error("Profile update error:", e);
     return c.json({ error: "Failed to process request" }, 500);
   }
 });
