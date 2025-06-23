@@ -4,11 +4,13 @@ import { adminSchema } from "../schema/admin-schema";
 import { setCorsHeaders } from "@/lib/cors-header";
 
 import { userResolver } from "../resolver/admin/user-resolver";
+import { dashboardResolver } from "../resolver/admin/dashboard-resolver";
 
 const schema = adminSchema;
 
 const rootValue = {
   ...userResolver,
+  ...dashboardResolver,
 };
 
 export async function POST(req: NextRequest) {

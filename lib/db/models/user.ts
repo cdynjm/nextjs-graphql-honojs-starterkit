@@ -1,5 +1,5 @@
 import mongoose, { Schema, Document } from "mongoose";
-
+import leanVirtuals from "mongoose-lean-virtuals";
 interface IUser extends Document {
   name: string;
   email: string;
@@ -34,5 +34,7 @@ UserSchema.virtual("posts", {
 
 UserSchema.set("toObject", { virtuals: true });
 UserSchema.set("toJSON", { virtuals: true });
+
+UserSchema.plugin(leanVirtuals);
 
 export const User = mongoose.models.User || mongoose.model<IUser>("User", UserSchema);

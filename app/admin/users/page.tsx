@@ -274,7 +274,8 @@ export default function UsersPage() {
     try {
       const res = await axios.delete(endpoint, {
         data: {
-          ...data
+          ...data,
+          type: "user",
         },
         headers: {
           Authorization: `Bearer ${session?.bearer}`,

@@ -7,6 +7,7 @@ import { User as UserCollection } from "@/types/user";
 import { decrypt, generateKey } from "@/lib/crypto";
 import { Types } from "mongoose";
 import { authMiddlewareJWT } from "../../middleware/auth-middleware-jwt";
+import { Post } from "@/lib/db/models/post";
 
 const app = new Hono().basePath("/api/admin/users");
 app.use("*", authMiddlewareJWT);
@@ -29,7 +30,6 @@ app.post("/", async (c) => {
       password: hashedPassword,
       photo,
       role: 1,
-      status: 3,
     });
 
     await newUser.save();
@@ -74,23 +74,49 @@ app.put("/", async (c) => {
 });
 
 app.delete("/", async (c) => {
-  try {
-    await connectToDatabase();
-    const { encrypted_id } = await c.req.json();
+  
+  const { type } = await c.req.json();
 
-    const key = await generateKey();
-    const decrypted_id = await decrypt(encrypted_id, key);
+  if (type === "post") {
+    try {
+      await connectToDatabase();
 
-    if (!Types.ObjectId.isValid(decrypted_id)) {
-      return c.json({ error: "Invalid ID" }, 400);
+      const { encrypted_id } = await c.req.json();
+      const key = await generateKey();
+      const decrypted_id = await decrypt(encrypted_id, key);
+
+      if (!Types.ObjectId.isValid(decrypted_id)) {
+        return c.json({ error: "Invalid user ID" }, 400);
+      }
+
+      await Post.findByIdAndDelete(decrypted_id);
+
+      return c.json({ message: "Post has been deleted" }, 200);
+    } catch (error) {
+      console.error(error);
+      return c.json({ error: "Failed to delete post" }, 500);
     }
+  }
 
-    await User.findByIdAndDelete(decrypted_id);
+  if (type == "user") {
+    try {
+      await connectToDatabase();
+      const { encrypted_id } = await c.req.json();
 
-    return c.json({ message: "User has been deleted" }, 200);
-  } catch (error) {
-    console.error(error);
-    return c.json({ error: "Failed to delete user" }, 500);
+      const key = await generateKey();
+      const decrypted_id = await decrypt(encrypted_id, key);
+
+      if (!Types.ObjectId.isValid(decrypted_id)) {
+        return c.json({ error: "Invalid ID" }, 400);
+      }
+
+      await User.findByIdAndDelete(decrypted_id);
+
+      return c.json({ message: "User has been deleted" }, 200);
+    } catch (error) {
+      console.error(error);
+      return c.json({ error: "Failed to delete user" }, 500);
+    }
   }
 });
 

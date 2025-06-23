@@ -33,6 +33,7 @@
     "lucide-react": "^0.514.0",
     "mongodb": "^6.17.0",
     "mongoose": "^8.16.0",
+    "mongoose-lean-virtuals": "^2.0.0",
     "mysql2": "^3.14.1",
     "nanoid": "^5.1.5",
     "next": "15.3.3",

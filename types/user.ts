@@ -8,4 +8,10 @@ export interface User {
   photo: string;
   created_at: Date;
   updated_at: Date;
+  posts?: {
+    encrypted_id: string;
+    status: string;
+    created_at: Date;
+    updated_at: Date;
+  }[];
 }

@@ -1,9 +1,11 @@
 // userResolvers.ts
 import { connectToDatabase } from "@/lib/db/mongodb";
-import { User} from "@/lib/db/models/user";
+import { User } from "@/lib/db/models/user";
 import { User as UserCollection } from "@/types/user";
 import { encrypt, decrypt, generateKey } from "@/lib/crypto";
 import { Types } from "mongoose";
+import { Post } from "@/lib/db/models/post";
+import { Post as PostCollection } from "@/types/post";
 
 export const userResolver = {
   getUsers: async ({ limit, offset }: { limit: number; offset: number }) => {
@@ -43,7 +45,42 @@ export const userResolver = {
 
     if (!Types.ObjectId.isValid(decryptedID)) return null;
 
-    const user = await User.findById(decryptedID).lean();
+    const user = (await User.findById(decryptedID)
+    .populate({
+      path: "posts",
+      
+    })
+    .lean()) as unknown as UserCollection | null;
+
     return user ?? null;
   },
+
+  getUserPosts: async ({ encrypted_id }: { encrypted_id: string }) => {
+    await connectToDatabase();
+    const key = await generateKey();
+    const decryptedID = await decrypt(encrypted_id, key);
+
+    if (!Types.ObjectId.isValid(decryptedID)) return null;
+
+    const posts = await Post.find({author: decryptedID})
+    .populate("author")
+    .sort({ created_at: -1 })
+    .lean() as unknown as PostCollection[];
+
+    if (!posts || posts.length === 0) {
+      return [];
+    }
+
+    const encryptedPosts = await Promise.all(
+      posts.map(async (post) => {
+        const encryptedId = await encrypt(post._id.toString(), key);
+        return {
+          ...post,
+          encrypted_id: encryptedId,
+        };
+      })
+    );
+
+    return encryptedPosts;
+  }
 };
