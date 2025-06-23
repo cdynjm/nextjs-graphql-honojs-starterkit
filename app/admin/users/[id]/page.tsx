@@ -69,9 +69,6 @@ export default function UserInfoPage({
           email
           photo
           role
-          posts {
-            status
-          }
         }
         getUserPosts(encrypted_id: $encrypted_id) {
           encrypted_id

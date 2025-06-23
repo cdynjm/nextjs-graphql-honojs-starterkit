@@ -98,7 +98,7 @@ app.delete("/", async (c) => {
     }
   }
 
-  if (type == "user") {
+  if (type === "user") {
     try {
       await connectToDatabase();
       const { encrypted_id } = await c.req.json();

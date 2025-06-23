@@ -45,12 +45,7 @@ export const userResolver = {
 
     if (!Types.ObjectId.isValid(decryptedID)) return null;
 
-    const user = (await User.findById(decryptedID)
-    .populate({
-      path: "posts",
-      
-    })
-    .lean()) as unknown as UserCollection | null;
+    const user = (await User.findById(decryptedID).lean()) as unknown as UserCollection | null;
 
     return user ?? null;
   },
