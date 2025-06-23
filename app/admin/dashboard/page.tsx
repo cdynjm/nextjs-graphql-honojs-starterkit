@@ -54,17 +54,6 @@ export default function DashboardPage() {
 
   const endpoint = "/api/admin/dashboard" as string;
 
-  const {
-    register: registerPost,
-    handleSubmit: handlePostSubmit,
-    setValue: setPostValue,
-    formState: { errors: postErrors, isSubmitting: isPostSubmitting },
-  } = useForm<CreatePostForm>();
-
-  useEffect(() => {
-    setPostValue("encrypted_id", session?.user.id ?? "");
-  }, [setPostValue, session]);
-
   const fetchPosts = async (): Promise<Post[]> => {
     const query = gql`
       query {
@@ -95,6 +84,18 @@ export default function DashboardPage() {
     queryFn: fetchPosts,
   });
 
+  const {
+    register: registerPost,
+    reset: resetPostForm,
+    handleSubmit: handlePostSubmit,
+    setValue: setPostValue,
+    formState: { errors: postErrors, isSubmitting: isPostSubmitting },
+  } = useForm<CreatePostForm>();
+
+  useEffect(() => {
+    setPostValue("encrypted_id", session?.user.id ?? "");
+  }, [setPostValue, session]);
+
   const onPostSubmit: SubmitHandler<CreatePostForm> = async (data) => {
     try {
       const res = await axios.post(
@@ -109,6 +110,7 @@ export default function DashboardPage() {
         }
       );
 
+      resetPostForm();
       refetch();
 
       toast("Status posted successfully", {
@@ -136,7 +138,7 @@ export default function DashboardPage() {
   };
 
   const [deletePost, setDeletePost] = useState<Post | null>(null);
-  
+
   const {
     handleSubmit: handleDeleteSubmit,
     reset: resetDeleteForm,
@@ -146,44 +148,44 @@ export default function DashboardPage() {
 
   useEffect(() => {
     if (deletePost) {
-      setDeleteValue("encrypted_id", deletePost.encrypted_id ?? "" as string);
+      setDeleteValue("encrypted_id", deletePost.encrypted_id ?? ("" as string));
     } else {
       resetDeleteForm();
     }
   }, [deletePost, setDeleteValue, resetDeleteForm]);
 
   const onDeleteSubmit: SubmitHandler<DeletePostForm> = async (data) => {
-      if (!deletePost) return;
-      try {
-        const res = await axios.delete(endpoint, {
-          data: {
-            ...data
-          },
-          headers: {
-            Authorization: `Bearer ${session?.bearer}`,
-          },
-        });
-  
-        resetDeleteForm();
-        setDeletePost(null);
-        refetch();
-  
-        toast("Deleted successfully", {
-          description: res.data.message,
-          position: "top-right",
-          action: {
-            label: "Close",
-            onClick: () => {},
-          },
-        });
-      } catch (error) {
-        console.error("Delete post failed", error);
-      }
-    };
-  
-    const openDeleteDialog = (post: Post) => {
-      setDeletePost(post);
-    };
+    if (!deletePost) return;
+    try {
+      const res = await axios.delete(endpoint, {
+        data: {
+          ...data,
+        },
+        headers: {
+          Authorization: `Bearer ${session?.bearer}`,
+        },
+      });
+
+      resetDeleteForm();
+      setDeletePost(null);
+      refetch();
+
+      toast("Deleted successfully", {
+        description: res.data.message,
+        position: "top-right",
+        action: {
+          label: "Close",
+          onClick: () => {},
+        },
+      });
+    } catch (error) {
+      console.error("Delete post failed", error);
+    }
+  };
+
+  const openDeleteDialog = (post: Post) => {
+    setDeletePost(post);
+  };
 
   /*  const stats = [
     {
@@ -320,55 +322,69 @@ export default function DashboardPage() {
         ) : (
           <>
             <div className="w-full space-y-4">
-              {posts?.map((pos, index) => (
-                <Card
-                  key={index}
-                  className="w-full border rounded-xl shadow-none"
-                >
-                  <CardHeader className="flex flex-col items-start gap-1">
-                    <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-full bg-gray-200 overflow-hidden">
-                        {pos.author.photo ? (
-                          <Image
-                            src={pos.author.photo}
-                            width={40}
-                            height={40}
-                            alt={pos.author.name}
-                            className="object-cover w-full h-full"
-                            priority
-                            draggable="false"
-                          />
-                        ) : (
-                          <div className="w-full h-full flex items-center justify-center text-xs text-gray-500">
-                            N/A
+              {posts?.length ? (
+                <>
+                  {posts?.map((pos, index) => (
+                    <Card
+                      key={index}
+                      className="w-full border rounded-xl shadow-none"
+                    >
+                      <CardHeader className="flex flex-col items-start gap-1">
+                        <div className="flex items-center gap-3">
+                          <div className="w-10 h-10 rounded-full bg-gray-200 overflow-hidden">
+                            {pos.author.photo ? (
+                              <Image
+                                src={pos.author.photo}
+                                width={40}
+                                height={40}
+                                alt={pos.author.name}
+                                className="object-cover w-full h-full"
+                                priority
+                                draggable="false"
+                              />
+                            ) : (
+                              <div className="w-full h-full flex items-center justify-center text-xs text-gray-500">
+                                N/A
+                              </div>
+                            )}
                           </div>
-                        )}
-                      </div>
-                      <div>
-                        <p className="font-medium">{pos.author.name}</p>
-                        <p className="text-sm text-gray-500 text-[13px]">
-                          {formatDate(pos.created_at ?? "")}
+                          <div>
+                            <p className="font-medium">{pos.author.name}</p>
+                            <p className="text-sm text-gray-500 text-[13px]">
+                              {formatDate(pos.created_at ?? "")}
+                            </p>
+                          </div>
+                        </div>
+                      </CardHeader>
+                      <CardContent>
+                        <p className="text-gray-800 text-[13px]">
+                          {pos.status}
                         </p>
-                      </div>
-                    </div>
-                  </CardHeader>
-                  <CardContent>
-                    <p className="text-gray-800 text-[13px]">{pos.status}</p>
+                      </CardContent>
+                      {pos.author.email === session?.user.email && (
+                        <CardFooter>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            className="text-red-500 text-xs ml-[-10px] hover:bg-transparent"
+                            onClick={() => openDeleteDialog(pos)}
+                          >
+                            <Trash /> Delete
+                          </Button>
+                        </CardFooter>
+                      )}
+                    </Card>
+                  ))}
+                </>
+              ) : (
+                <Card className="shadow-none">
+                  <CardContent className="text-center">
+                    <p className="text-gray-500 text-[13px]">
+                      No posts available.
+                    </p>
                   </CardContent>
-                  {pos.author.email === session?.user.email && (
-                    <CardFooter>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        className="text-red-500 text-xs ml-[-10px] hover:bg-transparent"
-                        onClick={() => openDeleteDialog(pos)}
-                      >
-                        <Trash /> Delete
-                      </Button>
-                    </CardFooter>
-                  )}
                 </Card>
-              ))}
+              )}
             </div>
           </>
         )}

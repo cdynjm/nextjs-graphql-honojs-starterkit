@@ -75,6 +75,7 @@ export default function UserInfoPage({
           status
           created_at
           author {
+            email
             name
             photo
           }
@@ -250,54 +251,69 @@ export default function UserInfoPage({
         ) : (
           <>
             <div className="w-full space-y-4">
-              {posts?.map((pos, index) => (
-                <Card
-                  key={index}
-                  className="w-full border rounded-xl shadow-none"
-                >
-                  <CardHeader className="flex flex-col items-start gap-1">
-                    <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-full bg-gray-200 overflow-hidden">
-                        {pos.author.photo ? (
-                          <Image
-                            src={pos.author.photo}
-                            width={40}
-                            height={40}
-                            alt={pos.author.name}
-                            className="object-cover w-full h-full"
-                            priority
-                            draggable="false"
-                          />
-                        ) : (
-                          <div className="w-full h-full flex items-center justify-center text-xs text-gray-500">
-                            N/A
-                          </div>
-                        )}
-                      </div>
-                      <div>
-                        <p className="font-medium">{pos.author.name}</p>
-                        <p className="text-sm text-gray-500 text-[13px]">
-                          {formatDate(pos.created_at ?? "")}
-                        </p>
-                      </div>
-                    </div>
-                  </CardHeader>
-                  <CardContent>
-                    <p className="text-gray-800 text-[13px]">{pos.status}</p>
-                  </CardContent>
-
-                  <CardFooter>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      className="text-red-500 text-xs ml-[-10px] hover:bg-transparent"
-                      onClick={() => openDeleteDialog(pos)}
+              {posts?.length ? (
+                <>
+                  {posts?.map((pos, index) => (
+                    <Card
+                      key={index}
+                      className="w-full border rounded-xl shadow-none"
                     >
-                      <Trash /> Delete
-                    </Button>
-                  </CardFooter>
+                      <CardHeader className="flex flex-col items-start gap-1">
+                        <div className="flex items-center gap-3">
+                          <div className="w-10 h-10 rounded-full bg-gray-200 overflow-hidden">
+                            {pos.author.photo ? (
+                              <Image
+                                src={pos.author.photo}
+                                width={40}
+                                height={40}
+                                alt={pos.author.name}
+                                className="object-cover w-full h-full"
+                                priority
+                                draggable="false"
+                              />
+                            ) : (
+                              <div className="w-full h-full flex items-center justify-center text-xs text-gray-500">
+                                N/A
+                              </div>
+                            )}
+                          </div>
+                          <div>
+                            <p className="font-medium">{pos.author.name}</p>
+                            <p className="text-sm text-gray-500 text-[13px]">
+                              {formatDate(pos.created_at ?? "")}
+                            </p>
+                          </div>
+                        </div>
+                      </CardHeader>
+                      <CardContent>
+                        <p className="text-gray-800 text-[13px]">
+                          {pos.status}
+                        </p>
+                      </CardContent>
+                      {pos.author.email === session?.user.email && (
+                      <CardFooter>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="text-red-500 text-xs ml-[-10px] hover:bg-transparent"
+                          onClick={() => openDeleteDialog(pos)}
+                        >
+                          <Trash /> Delete
+                        </Button>
+                      </CardFooter>
+                      )}
+                    </Card>
+                  ))}
+                </>
+              ) : (
+                <Card className="shadow-none">
+                  <CardContent className="text-center">
+                    <p className="text-gray-500 text-[13px]">
+                      No posts available.
+                    </p>
+                  </CardContent>
                 </Card>
-              ))}
+              )}
             </div>
           </>
         )}
