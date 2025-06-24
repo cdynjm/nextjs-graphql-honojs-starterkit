@@ -284,7 +284,7 @@ export default function DashboardPage() {
         </DialogContent>
       </Dialog>
 
-      <div className="grid grid-cols-1 gap-4 justify-center mx-0 lg:mx-50">
+      <div className="grid grid-cols-1 gap-4 justify-center">
         <form onSubmit={handlePostSubmit(onPostSubmit)}>
           <div className="flex-cols items-center gap-2">
             <div className="w-full mb-4">

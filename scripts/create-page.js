@@ -12,7 +12,9 @@ function toPascalCase(str) {
 const pagePath = process.argv[2]; // e.g., admin/blog
 
 if (!pagePath) {
-  console.error("❌ Please provide a page path: npm run create:page admin/blog");
+  console.error(
+    "❌ Please provide a page path: npm run create:page admin/blog"
+  );
   process.exit(1);
 }
 
@@ -65,7 +67,12 @@ fs.writeFileSync(path.join(pageDir, "page.tsx"), pageTemplate);
 
 // ========== Create Resolver ==========
 
-const resolverDir = path.join("app", "graphql", "resolver", ...pathParts.slice(0, -1)); // e.g., graphql/resolver/admin
+const resolverDir = path.join(
+  "app",
+  "graphql",
+  "resolver",
+  ...pathParts.slice(0, -1)
+); // e.g., graphql/resolver/admin
 const resolverPath = path.join(resolverDir, `${pageName}-resolver.ts`);
 
 if (fs.existsSync(resolverPath)) {
