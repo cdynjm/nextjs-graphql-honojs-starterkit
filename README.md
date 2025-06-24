@@ -1,36 +1,108 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Next.js + GraphQL + Hono.js Starter Kit
+By: JEM CDYN, Dev.
+
+A modern, full-stack starter kit combining Next.js, GraphQL, and Hono.js designed for rapid development and seamless developer experience.
+
+---
+
+## Features
+
+- ⚡️ **GraphQL-ready**  
+  Easily query and mutate data with a clean, scalable API layer.
+
+- 🧩 **Hono.js Integration**  
+  Lightweight, blazing-fast backend framework optimized for APIs.
+
+- 🔐 **Route Protection**  
+  Built-in middleware for secure, auth-protected routes.
+
+- 🗂 **File-Based Routing**  
+  Organize pages and API routes following Next.js conventions.
+
+- 🔑 **NextAuth.js**  
+  Seamless and secure authentication out of the box.
+
+- 🧠 **Drizzle ORM**  
+  Type-safe SQL layer with schema migrations for relational databases.
+
+- 🗄 **MongoDB & Supabase Support**  
+  Choose the database that fits your project — NoSQL with MongoDB or a fully managed backend with Supabase.
+
+- 🎨 **shadcn/ui**  
+  Accessible, beautiful UI components powered by Tailwind CSS.
+
+---
 
 ## Getting Started
 
-First, run the development server:
+1. **Clone the repository**
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+   ```bash
+   git clone https://github.com/cdynjm/nextjs-graphql-honojs-starterkit.git
+   cd nextjs-graphql-honojs-starterkit
+   ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+2. **Install dependencies**
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+   ```bash
+   npm install
+   ```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+3. **Run the development server**
 
-## Learn More
+   ```bash
+   npm run dev
+   ```
 
-To learn more about Next.js, take a look at the following resources:
+4. **Open your browser**
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+   Navigate to [http://localhost:3000](http://localhost:3000) to see the app in action.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+---
 
-## Deploy on Vercel
+## Automation Commands
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+You can automate your workflow with these commands:
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- **Create a new page with GraphQL resolvers and API routes:**
+
+  ```bash
+  npm run page {pagename}
+  ```
+
+- **Create a new role folder inside the app, along with GraphQL resolver, API routes, and update GraphQL schema:**
+
+  ```bash
+  npm run role {rolename}
+  ```
+
+---
+
+## Demo
+
+Check out the live demo here:  
+[https://nextjs-graphql-honojs-starterkit.vercel.app/](https://nextjs-graphql-honojs-starterkit.vercel.app/)
+
+---
+
+## Changelog
+
+For full changelog details, see:  
+[https://github.com/cdynjm/nextjs-graphql-honojs-starterkit/commits/v1.0.0](https://github.com/cdynjm/nextjs-graphql-honojs-starterkit/commits/v1.0.0)
+
+---
+
+## License
+
+This starter kit is free to use for personal and professional projects.
+JEM CDYN, Dev.
+
+---
+
+## Built For
+
+Performance, extensibility, and developer happiness — so you can focus on building great apps.
+
+---
+
+**Enjoy building with this starter kit! 🚀**
