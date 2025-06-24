@@ -13,7 +13,7 @@ const pagePath = process.argv[2]; // e.g., admin/blog
 
 if (!pagePath) {
   console.error(
-    "❌ Please provide a page path: npm run create:page admin/blog"
+    "❌ Please provide a page path: npm run page admin/blog"
   );
   process.exit(1);
 }
