@@ -74,7 +74,6 @@ app.put("/", async (c) => {
 });
 
 app.delete("/", async (c) => {
-  
   const { type } = await c.req.json();
 
   if (type === "post") {
@@ -89,7 +88,8 @@ app.delete("/", async (c) => {
         return c.json({ error: "Invalid user ID" }, 400);
       }
 
-      await Post.findByIdAndDelete(decrypted_id);
+      const post = await Post.findById(decrypted_id);
+      post?.softDelete();
 
       return c.json({ message: "Post has been deleted" }, 200);
     } catch (error) {
@@ -110,7 +110,13 @@ app.delete("/", async (c) => {
         return c.json({ error: "Invalid ID" }, 400);
       }
 
-      await User.findByIdAndDelete(decrypted_id);
+      const user = await User.findById(decrypted_id);
+      user?.softDelete();
+
+      const posts = await Post.find({ author: user._id });
+      for (const post of posts) {
+        await post.softDelete();
+      }
 
       return c.json({ message: "User has been deleted" }, 200);
     } catch (error) {

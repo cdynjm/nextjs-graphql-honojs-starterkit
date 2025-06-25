@@ -47,7 +47,8 @@ app.delete("/", async (c) => {
       return c.json({ error: "Invalid user ID" }, 400);
     }
 
-    await Post.findByIdAndDelete(decrypted_id);
+    const post = await Post.findById(decrypted_id);
+    post?.softDelete();
 
     return c.json({ message: "Post has been deleted" }, 200);
   } catch (error) {
