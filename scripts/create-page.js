@@ -12,9 +12,7 @@ function toPascalCase(str) {
 const pagePath = process.argv[2]; // e.g., admin/blog
 
 if (!pagePath) {
-  console.error(
-    "❌ Please provide a page path: npm run page admin/blog"
-  );
+  console.error("❌ Please provide a page path: npm run page admin/blog");
   process.exit(1);
 }
 
@@ -134,3 +132,54 @@ export const DELETE = handle(app);
 `;
 
 fs.writeFileSync(apiRoutePath, apiTemplate);
+
+// ========== Auto-import Resolver into route.ts ==========
+
+const role = pathParts[0];
+const resolverName = `${pageName}Resolver`;
+
+const routePath = path.join("app", "graphql", role, "route.ts");
+
+if (fs.existsSync(routePath)) {
+  let routeContent = fs.readFileSync(routePath, "utf8");
+
+  const importLine = `import { ${resolverName} } from "../resolver/${role}/${pageName}-resolver";`;
+  if (!routeContent.includes(importLine)) {
+    // Insert import after last import statement (or at start if none)
+    const importStatements = [...routeContent.matchAll(/^import .+;$/gm)];
+
+    if (importStatements.length > 0) {
+      const lastImport = importStatements[importStatements.length - 1];
+      const insertPos = lastImport.index + lastImport[0].length;
+
+      routeContent =
+        routeContent.slice(0, insertPos) +
+        "\n" +
+        importLine +
+        "\n" +
+        routeContent.slice(insertPos);
+    } else {
+      routeContent = importLine + "\n\n" + routeContent;
+    }
+
+    // Then do your rootValue merge as before
+    const rootValueRegex = /const rootValue\s*=\s*{([\s\S]*?)}/m;
+    routeContent = routeContent.replace(rootValueRegex, (match, inside) => {
+      if (inside.includes(`...${resolverName}`)) return match; // Already added
+
+      const trimmedInside = inside.trim();
+      const newInside = trimmedInside.endsWith(",")
+        ? `${trimmedInside} \n  ...${resolverName},`
+        : `${trimmedInside}, \n  ...${resolverName},`;
+
+      return `const rootValue = {\n  ${newInside}\n}`;
+    });
+
+    fs.writeFileSync(routePath, routeContent, "utf8");
+    console.log(`✅ Updated ${routePath} with new resolver.`);
+  } else {
+    console.log("ℹ️ Resolver already imported.");
+  }
+} else {
+  console.warn(`⚠️ ${routePath} does not exist. Skipped resolver import.`);
+}
