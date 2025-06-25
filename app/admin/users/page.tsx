@@ -71,7 +71,7 @@ export default function UsersPage() {
 
   const graphQLClient = getGraphQLClient(
     "/graphql/admin",
-    session?.token
+    session?.bearer
   );
 
   const endpoint = "/api/admin/users" as string;

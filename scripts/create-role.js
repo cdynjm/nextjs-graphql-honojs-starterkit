@@ -49,10 +49,15 @@ const routeFile = path.join(gqlDir, "route.ts");
 if (!fs.existsSync(routeFile)) {
   // Template for route.ts
   const routeTemplate = `\
-import { NextRequest, NextResponse } from "next/server";
 import { graphql as graphqlExec } from "graphql";
 import { ${safeRole}Schema } from "../schema/${safeRole}-schema";
 import { setCorsHeaders } from "@/lib/cors-header";
+import { Hono } from "hono";
+import { handle } from "hono/vercel";
+import { authMiddlewareJWT } from "@/app/api/middleware/auth-middleware-jwt";
+
+const app = new Hono().basePath("/graphql/${safeRole}");
+app.use("*", authMiddlewareJWT);
 
 const schema = ${safeRole}Schema;
 
@@ -60,8 +65,8 @@ const rootValue = {
   // Add your resolvers here
 };
 
-export async function POST(req: NextRequest) {
-  const { query, variables } = await req.json();
+app.post("/", async (c) => {
+  const { query, variables } = await c.req.json();
 
   const result = await graphqlExec({
     schema,
@@ -70,16 +75,21 @@ export async function POST(req: NextRequest) {
     variableValues: variables,
   });
 
-  const res = NextResponse.json(result);
-  setCorsHeaders(res);
-  return res;
-}
+  const res = new Response(JSON.stringify(result), {
+    status: 200,
+    headers: { "Content-Type": "application/json" },
+  });
 
-export async function OPTIONS() {
-  const res = new NextResponse(null, { status: 204 });
-  setCorsHeaders(res);
-  return res;
-}
+  return setCorsHeaders(res);
+});
+
+app.options("/", () => {
+  const res = new Response(null, { status: 204 });
+  return setCorsHeaders(res);
+});
+
+export const POST = handle(app);
+export const OPTIONS = handle(app);
 `;
 
   fs.writeFileSync(routeFile, routeTemplate);

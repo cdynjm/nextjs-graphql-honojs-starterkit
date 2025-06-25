@@ -50,7 +50,7 @@ export default function DashboardPage() {
     return () => setTitle("");
   }, [setTitle]);
 
-  const graphQLClient = getGraphQLClient("/graphql/admin", session?.token);
+  const graphQLClient = getGraphQLClient("/graphql/admin", session?.bearer);
 
   const endpoint = "/api/admin/dashboard" as string;
 
