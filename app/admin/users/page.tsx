@@ -106,7 +106,7 @@ export default function UsersPage() {
   };
 
   const [page, setPage] = useState(1);
-  const limit = 3;
+  const limit = 10;
   const offset = (page - 1) * limit;
 
   const { data, isPending, refetch } = useQuery({
