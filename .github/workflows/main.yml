@@ -19,14 +19,14 @@ jobs:
       - name: 🏗️ Build Next.js app
         run: npm run build
         env:
-          NEXT_PUBLIC_API_BASE_URL: "https://sample.southernleyte.org.ph/"
-          NEXTAUTH_ACCESSTOKEN: "sample-token"
-          MONGODB_URI: "mongodb+srv://cdynjm:xxSn3JXb0CkbN5BS@cluster1.ziep46f.mongodb.net/myappdb?retryWrites=true&w=majority&appName=Cluster1"
-          NEXTAUTH_SECRET: "sample-secret"
-          NEXTAUTH_URL: "https://sample.southernleyte.org.ph/"
-          CRYPTO_SECRET_KEY: "egikeriokergerigrtjhbtrbobj"
-          BLOB_READ_WRITE_TOKEN: "vercel_blob_rw_UaktdAnRLs0DysAl_BdQ8fNtuXe1wcCO7zqrDXIW3MNvGSb"
-          JWT_SECRET: "2vBveAMr8V2W7sB3rgZBwQxdIs77zSZzkhv0ltV5dQJAHwehwX"
+          NEXT_PUBLIC_API_BASE_URL: ${{ secrets.SERVER }}
+          NEXTAUTH_ACCESSTOKEN: ${{ secrets.TOKEN }}
+          MONGODB_URI: ${{ secrets.MONGODB_URI }}
+          NEXTAUTH_SECRET: ${{ secrets.TOKEN }}
+          NEXTAUTH_URL: ${{ secrets.SERVER }}
+          CRYPTO_SECRET_KEY: ${{ secrets.CRYPTO_SECRET_KEY }}
+          BLOB_READ_WRITE_TOKEN: ${{ secrets.BLOB_READ_WRITE_TOKEN }}
+          JWT_SECRET: ${{ secrets.JWT_SECRET }}
 
       - name: 🚀 Upload .next folder to cPanel via FTP
         run: node scripts/deploy-production.js
