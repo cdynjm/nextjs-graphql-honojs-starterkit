@@ -291,7 +291,7 @@ export default function DashboardPage() {
               <Textarea
                 id="create-post"
                 {...registerPost("status", { required: "Status is required" })}
-                placeholder="What's on your mind?"
+                placeholder="What's on your mind? Create a post..."
                 className="mb-2"
               />
               {postErrors.status && (
