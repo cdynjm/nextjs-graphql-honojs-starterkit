@@ -9,7 +9,7 @@
     "lint": "next lint",
     "page": "node scripts/create-page.js",
     "role": "node scripts/create-role.js",
-    "deploy": "node scripts/deploy.js"
+    "deploy": "node scripts/deploy-local.js"
   },
   "dependencies": {
     "@radix-ui/react-accordion": "^1.2.11",

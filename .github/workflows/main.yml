@@ -29,7 +29,7 @@ jobs:
           JWT_SECRET: "2vBveAMr8V2W7sB3rgZBwQxdIs77zSZzkhv0ltV5dQJAHwehwX"
 
       - name: 🚀 Upload .next folder to cPanel via FTP
-        run: node scripts/deploy.js
+        run: node scripts/deploy-production.js
         env:
           server: ${{ secrets.SERVER }}
           username: ${{ secrets.USERNAME }}
