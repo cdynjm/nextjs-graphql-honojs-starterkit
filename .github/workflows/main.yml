@@ -19,11 +19,11 @@ jobs:
       - name: 🏗️ Build Next.js app
         run: npm run build
         env:
-          NEXT_PUBLIC_API_BASE_URL: ${{ secrets.SERVER }}
+          NEXT_PUBLIC_API_BASE_URL: ${{ secrets.URL }}
           NEXTAUTH_ACCESSTOKEN: ${{ secrets.TOKEN }}
           MONGODB_URI: ${{ secrets.MONGODB_URI }}
           NEXTAUTH_SECRET: ${{ secrets.TOKEN }}
-          NEXTAUTH_URL: ${{ secrets.SERVER }}
+          NEXTAUTH_URL: ${{ secrets.URL }}
           CRYPTO_SECRET_KEY: ${{ secrets.CRYPTO_SECRET_KEY }}
           BLOB_READ_WRITE_TOKEN: ${{ secrets.BLOB_READ_WRITE_TOKEN }}
           JWT_SECRET: ${{ secrets.JWT_SECRET }}
