@@ -31,6 +31,7 @@ import { Button } from "@/components/ui/button";
 import { Loader2, Trash } from "lucide-react";
 import axios from "axios";
 import { toast } from "sonner";
+import { fromBase64Url } from "@/lib/encode";
 
 type DeletePostForm = {
   encrypted_id: string;
@@ -50,7 +51,7 @@ export default function UserInfoPage({
   const { setTitle } = usePageTitle();
 
   const { id } = use(params);
-  const encryptedID = decodeURIComponent(id);
+  const encryptedID = fromBase64Url(id);
 
   useEffect(() => {
     setTitle("Profile");

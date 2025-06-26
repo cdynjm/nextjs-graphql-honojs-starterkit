@@ -1,7 +1,7 @@
-/*
-const { createServer } = require("http");
-const { parse } = require("url");
-const next = require("next");
+
+import { createServer } from "http";
+import { parse } from "url";
+import next from "next";
 
 const port = process.env.PORT || 3000;
 const dev = false;
@@ -15,4 +15,4 @@ app.prepare().then(() => {
   }).listen(port, () => {
     console.log(`> Ready on http://localhost:${port}`);
   });
-}); */
+}); 

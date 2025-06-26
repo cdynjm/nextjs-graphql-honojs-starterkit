@@ -13,6 +13,7 @@ import { gql } from "graphql-request";
 import { User } from "@/types/user";
 import Image from "next/image";
 import { useRef } from "react";
+import { toBase64Url } from "@/lib/encode";
 
 import { SmartPagination } from "@/components/smart-pagination";
 
@@ -591,7 +592,7 @@ export default function UsersPage() {
                   <TableCell className="font-medium">{index + 1}</TableCell>
                   <TableCell>
                     <NProgressLink
-                      href={`/admin/users/${encodeURIComponent(
+                      href={`/admin/users/${toBase64Url(
                         user.encrypted_id
                       )}`}
                     >
