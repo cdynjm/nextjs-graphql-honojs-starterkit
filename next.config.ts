@@ -9,6 +9,7 @@ module.exports = {
     domains: [
       'uaktdanrls0dysal.public.blob.vercel-storage.com',
     ],
+    unoptimized: true,
   },
 }
 
