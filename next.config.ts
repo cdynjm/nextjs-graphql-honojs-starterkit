@@ -5,10 +5,12 @@ const nextConfig: NextConfig = {
 };
 
 module.exports = {
-  domains: [
-    'uaktdanrls0dysal.public.blob.vercel-storage.com',
-    'sample.southernleyte.org.ph',
-  ],
+  images: {
+    domains: [
+      'uaktdanrls0dysal.public.blob.vercel-storage.com',
+      'sample.southernleyte.org.ph'
+    ],
+  },
 }
 
 export default nextConfig;
