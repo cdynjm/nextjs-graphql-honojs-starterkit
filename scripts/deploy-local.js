@@ -7,7 +7,7 @@ const config = {
   host: "103.131.95.66",
   port: 21,
   localRoot: "C:/Users/Asus/Documents/nextjs-graphql-honojs-starterkit/public",
-  remoteRoot: "/",
+  remoteRoot: "/public",
   include: ["**/*"],
   deleteRemote: true,
   forcePasv: true,
