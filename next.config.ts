@@ -8,7 +8,6 @@ module.exports = {
   images: {
     domains: [
       'uaktdanrls0dysal.public.blob.vercel-storage.com',
-      'sample.southernleyte.org.ph'
     ],
   },
 }
