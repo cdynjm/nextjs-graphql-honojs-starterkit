@@ -1,4 +1,3 @@
-// userResolvers.ts
 import { connectToDatabase } from "@/lib/db/mongodb";
 import { Post } from "@/lib/db/models/post";
 import { Post as PostCollection } from "@/types/post";

@@ -1,4 +1,3 @@
-// userResolvers.ts
 import { connectToDatabase } from "@/lib/db/mongodb";
 import { User } from "@/lib/db/models/user";
 import { User as UserCollection } from "@/types/user";
