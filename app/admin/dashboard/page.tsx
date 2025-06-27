@@ -86,7 +86,6 @@ export default function DashboardPage() {
 
   const {
     register: registerPost,
-    reset: resetPostForm,
     handleSubmit: handlePostSubmit,
     setValue: setPostValue,
     formState: { errors: postErrors, isSubmitting: isPostSubmitting },
@@ -110,7 +109,7 @@ export default function DashboardPage() {
         }
       );
 
-      resetPostForm();
+      setPostValue("status", "");
       refetch();
 
       toast("Status posted successfully", {
