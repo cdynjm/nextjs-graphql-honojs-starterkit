@@ -211,7 +211,9 @@ async function seedRole() {
     if (role) {
       console.log(\`Role "\${roleName}" already exists, checking permissions...\`);
 
-      const currentPermissionIds = role.permissions.map((p) => p._id.toString());
+      const currentPermissionIds = role.permissions.map((p: { _id: mongoose.Types.ObjectId }) => p._id.toString());
+
+      // Find permissions that are missing from the current role
       const newPermissions = permissionDocs.filter(
         (p) => !currentPermissionIds.includes(p._id.toString())
       );
@@ -248,3 +250,35 @@ const seederPath = path.join("lib/db/seeders", seederFilename);
 fs.writeFileSync(seederPath, seederContent, "utf8");
 console.log(`✅ Created seeder: ${seederFilename}`);
 
+
+// === 6. UPDATE redirectUserByRole.ts ===
+
+const redirectPath = path.join("lib/redirect.ts");
+let redirectContent = fs.readFileSync(redirectPath, "utf8");
+
+const newCase = `\n    case "${safeRole}":\n      router.push("/${safeRole}/dashboard");\n      break;`;
+
+// Regex to find the last `case` in switch
+const switchRegex = /switch\s*\(role\)\s*{([\s\S]*?)default:/m;
+const matchSwitch = switchRegex.exec(redirectContent);
+
+if (matchSwitch) {
+  const casesBlock = matchSwitch[1];
+  if (!casesBlock.includes(`case "${safeRole}":`)) {
+    const insertIndex = matchSwitch.index + matchSwitch[0].indexOf("default:");
+    redirectContent =
+      redirectContent.slice(0, insertIndex) +
+      newCase +
+      "\n  " +
+      redirectContent.slice(insertIndex);
+
+    fs.writeFileSync(redirectPath, redirectContent, "utf8");
+    console.log(`✅ Updated redirectUserByRole.ts with role: "${safeRole}"`);
+  } else {
+    console.log(`ℹ️ redirectUserByRole.ts already has role: "${safeRole}"`);
+  }
+} else {
+  console.warn(
+    "⚠️ Could not find switch block in redirectUserByRole.ts — check the file format."
+  );
+}
