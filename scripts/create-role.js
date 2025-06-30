@@ -130,7 +130,7 @@ if (existingRoleRegex.test(mapContent)) {
 }
 
 // === 3.3 ADD REDIRECT RULE ===
-const newRedirectLine = `if (roleName === "${safeRole}") return NextResponse.redirect(new URL("/${safeRole}/dashboard", req.url));`;
+const newRedirectLine = `if (token.roleName === "${safeRole}") return NextResponse.redirect(new URL("/${safeRole}/dashboard", req.url));`;
 
 if (!middlewareContent.includes(newRedirectLine)) {
   const redirectBlockRegex = /if \(pathname === ["']\/["'] \|\| pathname === ["']\/register["']\) {([\s\S]*?)}/m;
@@ -181,4 +181,60 @@ if (matcherMatch) {
 // === 4. WRITE BACK ===
 fs.writeFileSync(middlewarePath, middlewareContent, "utf8");
 console.log(`✅ Updated middleware.ts for role "${safeRole}"`);
+
+
+// === 5. GENERATE NEW SEEDER ===
+
+const defaultPermissions = [""];
+
+const seederContent = `import "dotenv/config";
+
+import mongoose from "mongoose";
+import { Role } from "../models/role.js";
+import { Permission } from "../models/permission.js";
+import { connectToDatabase } from "../mongodb.js";
+
+const roleName = "${safeRole}";
+const permissionNames = ${JSON.stringify(defaultPermissions, null, 2)};
+
+async function seedRole() {
+  try {
+    await connectToDatabase();
+
+    let role = await Role.findOne({ name: roleName });
+    if (role) {
+      console.log(\`Role "\${roleName}" already exists, skipping creation.\`);
+    } else {
+      const permissions = await Permission.find({
+        name: { $in: permissionNames },
+      });
+
+      const permissionDocs = permissions.map((p) => ({
+        _id: p._id,
+        name: p.name,
+      }));
+
+      role = new Role({
+        name: roleName,
+        permissions: permissionDocs,
+      });
+
+      await role.save();
+      console.log(\`Role "\${roleName}" created with permissions.\`);
+    }
+  } catch (error) {
+    console.error("Error seeding role:", error);
+  } finally {
+    await mongoose.disconnect();
+  }
+}
+
+seedRole();
+`;
+
+const seederFilename = `seed-role-${safeRole}.ts`;
+const seederPath = path.join("lib/db/seeders", seederFilename);
+
+fs.writeFileSync(seederPath, seederContent, "utf8");
+console.log(`✅ Created seeder: ${seederFilename}`);
 

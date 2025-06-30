@@ -3,7 +3,8 @@ import type { NextRequestWithAuth } from "next-auth/middleware";
 import { NextResponse } from "next/server";
 
 const roleAccessMap: Record<string, string[]> = {
-  "admin": ["/admin", "/graphql/admin", "/graphql/resolver/admin", "/api/admin/"],
+"admin": ["/admin", "/graphql/admin", "/graphql/resolver/admin", "/api/admin/"],
+  "user": ["/user", "/graphql/user", "/graphql/resolver/user", "/api/user/"],
 };
 
 export default withAuth(
@@ -13,10 +14,9 @@ export default withAuth(
 
     if (pathname === "/" || pathname === "/register") {
       if (token && token.roleName) {
-        if (token.roleName === "admin") {
-          return NextResponse.redirect(new URL("/admin/dashboard", req.url));
-        }
-      }
+        if (token.roleName === "admin") return NextResponse.redirect(new URL("/admin/dashboard", req.url));
+      
+      if (token.roleName === "user") return NextResponse.redirect(new URL("/user/dashboard", req.url));}
       return NextResponse.next();
     }
 
@@ -52,5 +52,9 @@ export const config = {
     "/graphql/admin/:path*",
     "/graphql/resolver/admin/:path*",
     "/api/admin/:path*",
+    "/user/:path*",
+    "/graphql/user/:path*",
+    "/graphql/resolver/user/:path*",
+    "/api/user/:path*"
   ],
 };
