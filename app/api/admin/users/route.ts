@@ -9,6 +9,7 @@ import { Types } from "mongoose";
 import { authMiddlewareJWT } from "../../middleware/auth-middleware-jwt";
 import { Post } from "@/lib/db/models/post";
 import { checkUserAuthorization } from "@/lib/db/helpers/user-authorization";
+import { Role } from "@/lib/db/models/role";
 
 const app = new Hono().basePath("/api/admin/users");
 app.use("*", authMiddlewareJWT);
@@ -26,6 +27,8 @@ app.post("/", async (c) => {
       return c.json({ error: "Email already exists" }, 409);
     }
 
+    const role = await Role.findOne({name: "admin"});
+
     const hashedPassword = await bcrypt.hash(password, 10);
 
     const newUser = new User({
@@ -33,7 +36,7 @@ app.post("/", async (c) => {
       email,
       password: hashedPassword,
       photo,
-      role: 1,
+      role: role?._id,
     });
 
     await newUser.save();
