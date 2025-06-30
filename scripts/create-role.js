@@ -202,18 +202,28 @@ async function seedRole() {
     await connectToDatabase();
 
     let role = await Role.findOne({ name: roleName });
+    const permissions = await Permission.find({ name: { $in: permissionNames } });
+    const permissionDocs = permissions.map((p) => ({
+      _id: p._id,
+      name: p.name,
+    }));
+
     if (role) {
-      console.log(\`Role "\${roleName}" already exists, skipping creation.\`);
+      console.log(\`Role "\${roleName}" already exists, checking permissions...\`);
+
+      const currentPermissionIds = role.permissions.map((p) => p._id.toString());
+      const newPermissions = permissionDocs.filter(
+        (p) => !currentPermissionIds.includes(p._id.toString())
+      );
+
+      if (newPermissions.length === 0) {
+        console.log(\`All permissions are already assigned to role "\${roleName}".\`);
+      } else {
+        role.permissions.push(...newPermissions);
+        await role.save();
+        console.log(\`Added \${newPermissions.length} new permission(s) to role "\${roleName}".\`);
+      }
     } else {
-      const permissions = await Permission.find({
-        name: { $in: permissionNames },
-      });
-
-      const permissionDocs = permissions.map((p) => ({
-        _id: p._id,
-        name: p.name,
-      }));
-
       role = new Role({
         name: roleName,
         permissions: permissionDocs,

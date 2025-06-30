@@ -5,9 +5,13 @@ import { encrypt, decrypt, generateKey } from "@/lib/crypto";
 import { Types } from "mongoose";
 import { Post } from "@/lib/db/models/post";
 import { Post as PostCollection } from "@/types/post";
+import { checkUserAuthorization } from "@/lib/db/helpers/user-authorization";
 
 export const userResolver = {
   getUsers: async ({ limit, offset }: { limit: number; offset: number }) => {
+
+    await checkUserAuthorization("get_user");
+
     await connectToDatabase();
     const key = await generateKey();
 
@@ -38,6 +42,9 @@ export const userResolver = {
   },
 
   getUserInfo: async ({ encrypted_id }: { encrypted_id: string }) => {
+
+    await checkUserAuthorization("get_user");
+
     await connectToDatabase();
     const key = await generateKey();
     const decryptedID = await decrypt(encrypted_id, key);
@@ -50,6 +57,9 @@ export const userResolver = {
   },
 
   getUserPosts: async ({ encrypted_id }: { encrypted_id: string }) => {
+
+    await checkUserAuthorization("get_post");
+
     await connectToDatabase();
     const key = await generateKey();
     const decryptedID = await decrypt(encrypted_id, key);

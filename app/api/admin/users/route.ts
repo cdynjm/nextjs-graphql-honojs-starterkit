@@ -8,12 +8,16 @@ import { decrypt, generateKey } from "@/lib/crypto";
 import { Types } from "mongoose";
 import { authMiddlewareJWT } from "../../middleware/auth-middleware-jwt";
 import { Post } from "@/lib/db/models/post";
+import { checkUserAuthorization } from "@/lib/db/helpers/user-authorization";
 
 const app = new Hono().basePath("/api/admin/users");
 app.use("*", authMiddlewareJWT);
 
 app.post("/", async (c) => {
   try {
+
+    await checkUserAuthorization("create_user");
+
     await connectToDatabase();
     const { name, email, password, photo } = await c.req.json();
 
@@ -43,6 +47,9 @@ app.post("/", async (c) => {
 
 app.put("/", async (c) => {
   try {
+
+    await checkUserAuthorization("update_user");
+
     await connectToDatabase();
     const { encrypted_id, name, email } = await c.req.json();
 
@@ -78,6 +85,9 @@ app.delete("/", async (c) => {
 
   if (type === "post") {
     try {
+
+      await checkUserAuthorization("delete_post");
+
       await connectToDatabase();
 
       const { encrypted_id } = await c.req.json();
@@ -100,6 +110,9 @@ app.delete("/", async (c) => {
 
   if (type === "user") {
     try {
+
+      await checkUserAuthorization("delete_user");
+
       await connectToDatabase();
       const { encrypted_id } = await c.req.json();
 

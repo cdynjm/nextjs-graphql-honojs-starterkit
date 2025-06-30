@@ -2,9 +2,13 @@ import { connectToDatabase } from "@/lib/db/mongodb";
 import { Post } from "@/lib/db/models/post";
 import { Post as PostCollection } from "@/types/post";
 import { encrypt, generateKey } from "@/lib/crypto";
+import { checkUserAuthorization } from "@/lib/db/helpers/user-authorization";
 
 export const dashboardResolver = {
   getPosts: async () => {
+
+    await checkUserAuthorization("get_post");
+    
     await connectToDatabase();
     const key = await generateKey();
     const posts = await Post.find({})

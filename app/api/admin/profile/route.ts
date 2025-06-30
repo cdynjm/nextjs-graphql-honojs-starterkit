@@ -6,12 +6,16 @@ import { User} from "@/lib/db/models/user";
 import { decrypt, generateKey } from "@/lib/crypto";
 import { Types } from "mongoose";
 import { authMiddlewareJWT } from "../../middleware/auth-middleware-jwt";
+import { checkUserAuthorization } from "@/lib/db/helpers/user-authorization";
 
 const app = new Hono().basePath("/api/admin/profile");
 app.use("*", authMiddlewareJWT);
 
 app.put("/", async (c) => {
   try {
+
+    await checkUserAuthorization("update_profile");
+
     await connectToDatabase();
 
     const { encrypted_id, name, email, password } = await c.req.json();

@@ -77,7 +77,7 @@ export default function LoginPage() {
 
     if (res?.ok) {
       const session = await getSession();
-      const role = session?.user?.role;
+      const role = session?.user?.roleName;
 
       redirectUserByRole(role, router);
     } else {

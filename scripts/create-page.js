@@ -83,6 +83,8 @@ fs.mkdirSync(resolverDir, { recursive: true });
 const resolverTemplate = `\
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { connectToDatabase } from "@/lib/db/mongodb";
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+import { checkUserAuthorization } from "@/lib/db/helpers/user-authorization";
 
 export const ${pageName}Resolver = {
   // Add your GraphQL resolvers for ${pageName} here
@@ -118,13 +120,14 @@ import { authMiddlewareJWT } from "../../middleware/auth-middleware-jwt";
 import { decrypt, generateKey } from "@/lib/crypto";
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { Types } from "mongoose";
+import { checkUserAuthorization } from "@/lib/db/helpers/user-authorization";
 
 const app = new Hono().basePath("${basePath}");
 app.use("*", authMiddlewareJWT);
 
-app.post("/", async () => {});
-app.put("/", async () => {});
-app.delete("/", async () => {});
+app.post("/", async () => {await checkUserAuthorization("");});
+app.put("/", async () => {await checkUserAuthorization("");});
+app.delete("/", async () => {await checkUserAuthorization("");});
 
 export const POST = handle(app);
 export const PUT = handle(app);

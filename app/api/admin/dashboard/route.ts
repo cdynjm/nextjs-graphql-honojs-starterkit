@@ -5,12 +5,16 @@ import { Post } from "@/lib/db/models/post";
 import { authMiddlewareJWT } from "../../middleware/auth-middleware-jwt";
 import { decrypt, generateKey } from "@/lib/crypto";
 import { Types } from "mongoose";
+import { checkUserAuthorization } from "@/lib/db/helpers/user-authorization";
 
 const app = new Hono().basePath("/api/admin/dashboard");
 app.use("*", authMiddlewareJWT);
 
 app.post("/", async (c) => {
   try {
+
+    await checkUserAuthorization("create_post");
+
     await connectToDatabase();
 
     const { status, encrypted_id } = await c.req.json();
@@ -37,6 +41,9 @@ app.post("/", async (c) => {
 
 app.delete("/", async (c) => {
   try {
+
+    await checkUserAuthorization("delete_post");
+
     await connectToDatabase();
 
     const { encrypted_id } = await c.req.json();

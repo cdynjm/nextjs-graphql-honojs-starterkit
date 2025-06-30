@@ -14,29 +14,53 @@ const permissionNames = [
   "get_post",
   "create_post",
   "delete_post",
+  "update_profile",
 ];
 
 async function seedRole() {
   try {
     await connectToDatabase();
 
+    // Find the role by name
     let role = await Role.findOne({ name: roleName });
+
+    // Find all permissions by names in permissionNames
+    const permissions = await Permission.find({ name: { $in: permissionNames } });
+
+    // Map permissions to {_id, name}
+    const permissionDocs = permissions.map((p) => ({
+      _id: p._id,
+      name: p.name,
+    }));
+
     if (role) {
-      console.log(`Role "${roleName}" already exists, skipping creation.`);
+      console.log(`Role "${roleName}" already exists, checking permissions...`);
+
+      // Extract current permission IDs of the role as strings
+      const currentPermissionIds = role.permissions.map((p: { _id: mongoose.Types.ObjectId }) => p._id.toString());
+
+      // Find permissions that are missing from the current role
+      const newPermissions = permissionDocs.filter(
+        (p) => !currentPermissionIds.includes(p._id.toString())
+      );
+
+      if (newPermissions.length === 0) {
+        console.log(`All permissions are already assigned to role "${roleName}".`);
+      } else {
+        // Add new permissions to the role's permissions array
+        role.permissions.push(...newPermissions);
+
+        // Save the updated role
+        await role.save();
+        console.log(
+          `Added ${newPermissions.length} new permission(s) to role "${roleName}".`
+        );
+      }
     } else {
-      // Find permissions and map to { _id, name }
-      const permissions = await Permission.find({
-        name: { $in: permissionNames },
-      });
-
-      const permissionDocs = permissions.map((p) => ({
-        _id: p._id,
-        name: p.name,
-      }));
-
+      // Role does not exist, create it
       role = new Role({
         name: roleName,
-        permissions: permissionDocs, // store _id + name
+        permissions: permissionDocs,
       });
 
       await role.save();
