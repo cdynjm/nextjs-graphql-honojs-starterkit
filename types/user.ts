@@ -4,7 +4,10 @@ export interface User {
   name: string;
   email: string;
   password: string;
-  role: number;
+  role: {
+    _id: string,
+    name: string
+  };
   photo: string;
   created_at: Date;
   updated_at: Date;

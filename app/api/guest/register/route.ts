@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import bcrypt from "bcrypt";
 import { connectToDatabase } from "@/lib/db/mongodb"; // adjust path to your MongoDB connection function
 import { User } from "@/lib/db/models/user";
+import { Role } from "@/lib/db/models/role";
 
 export async function POST(req: Request) {
   try {
@@ -17,13 +18,15 @@ export async function POST(req: Request) {
       );
     }
 
+    const role = await Role.findOne({name: "admin"});
+
     const hashedPassword = await bcrypt.hash(password, 10);
 
     const newUser = new User({
       name,
       email,
       password: hashedPassword,
-      role: 1,
+      role: role?._id,
       photo: avatar,
     });
 

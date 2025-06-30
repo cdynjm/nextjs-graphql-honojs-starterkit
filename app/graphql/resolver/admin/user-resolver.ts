@@ -44,7 +44,7 @@ export const userResolver = {
 
     if (!Types.ObjectId.isValid(decryptedID)) return null;
 
-    const user = (await User.findById(decryptedID).lean()) as unknown as UserCollection | null;
+    const user = (await User.findById(decryptedID).lean().populate("role")) as unknown as UserCollection | null;
 
     return user ?? null;
   },

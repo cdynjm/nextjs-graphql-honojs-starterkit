@@ -102,73 +102,66 @@ export const OPTIONS = handle(app);
 const middlewarePath = path.join("middleware.ts");
 let middlewareContent = fs.readFileSync(middlewarePath, "utf8");
 
-// 3.1 DETERMINE NEXT ROLE ID
+// === 3.1 DETERMINE IF ROLE EXISTS ===
 const roleMapRegex =
-  /const roleAccessMap: Record<number, string\[]> = {([\s\S]*?)}/;
+  /const roleAccessMap: Record<string, string\[]> = {([\s\S]*?)}/;
 const match = roleMapRegex.exec(middlewareContent);
 
-let nextRoleId = 1;
-if (match) {
-  const mapContent = match[1];
-  const numbers = [...mapContent.matchAll(/(\d+):/g)].map((m) =>
-    parseInt(m[1])
-  );
-  if (numbers.length > 0) nextRoleId = Math.max(...numbers) + 1;
+if (!match) {
+  throw new Error("Could not find roleAccessMap in middleware.ts");
 }
 
-// 3.2 ADD TO roleAccessMap
-const newAccessEntry = `${nextRoleId}: ["/${safeRole}", "/graphql/${safeRole}", "/graphql/resolver/${safeRole}", "/api/${safeRole}/"], // ${
-  safeRole[0].toUpperCase() + safeRole.slice(1)
-}\n`;
+const mapContent = match[1];
 
-middlewareContent = middlewareContent.replace(roleMapRegex, (full, inner) => {
-  const cleanedInner = inner.trim().replace(/,\s*$/, ""); // clean trailing comma
-  return `const roleAccessMap: Record<number, string[]> = {\n${cleanedInner},\n${newAccessEntry}}`;
-});
+// Does the role already exist?
+const existingRoleRegex = new RegExp(`["'\`]${safeRole}["'\`]:`);
+if (existingRoleRegex.test(mapContent)) {
+  console.log(`✅ Role "${safeRole}" already exists in roleAccessMap`);
+} else {
+  // === 3.2 ADD TO roleAccessMap ===
+  const newAccessEntry = `  "${safeRole}": ["/${safeRole}", "/graphql/${safeRole}", "/graphql/resolver/${safeRole}", "/api/${safeRole}/"],`;
 
-// === 3. ADD REDIRECT RULE IF NOT EXISTS ===
-const redirectRegex =
-  /(if \(role === \d+\)[\s\S]*?return NextResponse\.redirect.*?;)(?![\s\S]*if \(role ===)/g;
-const newRedirectLine = `if (role === ${nextRoleId})\n          return NextResponse.redirect(new URL("/${safeRole}/dashboard", req.url));`;
+  middlewareContent = middlewareContent.replace(roleMapRegex, (full, inner) => {
+    const cleanedInner = inner.trim().replace(/,\s*$/, ""); // remove trailing comma
+    return `const roleAccessMap: Record<string, string[]> = {\n${cleanedInner},\n${newAccessEntry}\n}`;
+  });
+
+  console.log(`✅ Added "${safeRole}" to roleAccessMap`);
+}
+
+// === 3.3 ADD REDIRECT RULE ===
+const newRedirectLine = `if (roleName === "${safeRole}") return NextResponse.redirect(new URL("/${safeRole}/dashboard", req.url));`;
 
 if (!middlewareContent.includes(newRedirectLine)) {
-  const matches = [...middlewareContent.matchAll(redirectRegex)];
-  if (matches.length > 0) {
-    const lastMatch = matches[matches.length - 1];
-    const insertIndex =
-      (lastMatch.index !== undefined ? lastMatch.index : 0) +
-      lastMatch[0].length;
-    middlewareContent =
-      middlewareContent.slice(0, insertIndex) +
-      `\n        ${newRedirectLine}` +
-      middlewareContent.slice(insertIndex);
-  } else {
-    // fallback: no match found, maybe insert inside "/" check block
-    console.warn(
-      "⚠️ No role redirect block found. Inserting fallback redirect."
-    );
-    middlewareContent = middlewareContent.replace(
-      /if \(pathname === ["']\/["'][\s\S]*?{([\s\S]*?)}/,
-      (fullMatch, body) => {
-        return fullMatch.replace(body, `${body}\n        ${newRedirectLine}`);
-      }
-    );
-  }
+  const redirectBlockRegex = /if \(pathname === ["']\/["'] \|\| pathname === ["']\/register["']\) {([\s\S]*?)}/m;
+  middlewareContent = middlewareContent.replace(
+    redirectBlockRegex,
+    (fullMatch, body) => {
+      return fullMatch.replace(body, `${body}\n      ${newRedirectLine}`);
+    }
+  );
+  console.log(`✅ Added redirect rule for "${safeRole}"`);
+} else {
+  console.log(`✅ Redirect rule for "${safeRole}" already exists`);
 }
 
-// 3.4 ADD TO MATCHER
+// === 3.4 ADD TO MATCHER ===
 const matcherRegex = /matcher:\s*\[\s*([\s\S]*?)\]/m;
-const newMatchers = [
-  `/${safeRole}/:path*`,
-  `/graphql/${safeRole}/:path*`,
-  `/graphql/resolver/${safeRole}/:path*`,
-  `/api/${safeRole}/:path*`,
-];
+const matcherMatch = matcherRegex.exec(middlewareContent);
 
-middlewareContent = middlewareContent.replace(matcherRegex, (full, inner) => {
+if (matcherMatch) {
+  const inner = matcherMatch[1];
+
+  const newMatchers = [
+    `/${safeRole}/:path*`,
+    `/graphql/${safeRole}/:path*`,
+    `/graphql/resolver/${safeRole}/:path*`,
+    `/api/${safeRole}/:path*`,
+  ];
+
   const lines = inner
     .split(/,\s*/)
-    .map((line) => line.trim().replace(/^"+|"+$/g, "")) // strip any extra quotes
+    .map((line) => line.trim().replace(/^"+|"+$/g, ""))
     .filter(Boolean);
 
   newMatchers.forEach((m) => {
@@ -177,11 +170,15 @@ middlewareContent = middlewareContent.replace(matcherRegex, (full, inner) => {
     }
   });
 
-  return `matcher: [\n    ${lines.map((l) => `"${l}"`).join(",\n    ")}\n  ]`;
-});
+  const newMatcherBlock = `matcher: [\n    ${lines.map((l) => `"${l}"`).join(",\n    ")}\n  ]`;
+  middlewareContent = middlewareContent.replace(matcherRegex, newMatcherBlock);
 
-// === 4. WRITE BACK TO middleware.ts ===
+  console.log(`✅ Updated matcher with "${safeRole}" routes`);
+} else {
+  console.warn("⚠️ matcher block not found in middleware.ts");
+}
+
+// === 4. WRITE BACK ===
 fs.writeFileSync(middlewarePath, middlewareContent, "utf8");
-console.log(
-  `✅ Updated middleware.ts with role '${safeRole}' as ID ${nextRoleId}`
-);
+console.log(`✅ Updated middleware.ts for role "${safeRole}"`);
+

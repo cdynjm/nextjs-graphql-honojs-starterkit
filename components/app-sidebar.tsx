@@ -48,8 +48,8 @@ const header = [
 export function AppSidebar() {
   const { data: session } = useSession();
   const pathname = usePathname(); // get current path
-  const role = session?.user?.role ?? 2;
-  const menuItems = role === 1 ? adminItems : userItems;
+  const role = session?.user?.roleName ?? "user";
+  const menuItems = role === "admin" ? adminItems : userItems;
 
   return (
     <Sidebar variant="sidebar" collapsible="icon" className="border-transparent">

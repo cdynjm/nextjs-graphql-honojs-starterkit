@@ -8,7 +8,7 @@ export const adminSchema = buildSchema(gql`
     name: String
     email: String
     password: String
-    role: Int
+    role: Role
     photo: String
     created_at: String
     updated_at: String
@@ -20,6 +20,10 @@ export const adminSchema = buildSchema(gql`
     author: User
     created_at: String
     updated_at: String
+  }
+
+  type Role {
+    name: String
   }
 
   type PaginatedUsers {

@@ -2,31 +2,30 @@ import { withAuth } from "next-auth/middleware";
 import type { NextRequestWithAuth } from "next-auth/middleware";
 import { NextResponse } from "next/server";
 
-// Role-based route access map
-const roleAccessMap: Record<number, string[]> = {
-1: ["/admin", "/graphql/admin", "/graphql/resolver/admin", "/api/admin/"], // Admin,
+const roleAccessMap: Record<string, string[]> = {
+  "admin": ["/admin", "/graphql/admin", "/graphql/resolver/admin", "/api/admin/"],
 };
 
 export default withAuth(
-  function middleware(req: NextRequestWithAuth) {
+  async function middleware(req: NextRequestWithAuth) {
     const token = req.nextauth.token;
     const pathname = req.nextUrl.pathname;
 
     if (pathname === "/" || pathname === "/register") {
-      if (token) {
-        const role = token.role as number;
-        if (role === 1)
+      if (token && token.roleName) {
+        if (token.roleName === "admin") {
           return NextResponse.redirect(new URL("/admin/dashboard", req.url));
+        }
       }
       return NextResponse.next();
     }
 
-    if (!token || typeof token.role !== "number") {
+    if (!token || typeof token.roleName !== "string") {
       return NextResponse.redirect(new URL("/", req.url));
     }
 
-    const role = token.role;
-    const allowedPrefixes = roleAccessMap[role] || [];
+    const roleName = token.roleName; 
+    const allowedPrefixes = roleAccessMap[roleName] || [];
     const isAllowed = allowedPrefixes.some((prefix) =>
       pathname.startsWith(prefix)
     );
@@ -44,7 +43,7 @@ export default withAuth(
   }
 );
 
-// Matcher should include both guest and protected routes
+// ✅ Protected + guest routes
 export const config = {
   matcher: [
     "/",

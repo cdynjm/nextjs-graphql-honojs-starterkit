@@ -1,11 +1,12 @@
-import mongoose, { Schema, Document } from "mongoose";
+import mongoose, { Schema, Document, Types } from "mongoose";
 import leanVirtuals from "mongoose-lean-virtuals";
 import { softDeletePlugin } from "@/lib/db/plugins/soft-delete.plugin";
+
 interface IUser extends Document {
   name: string;
   email: string;
   password: string;
-  role?: number;
+  role?: Types.ObjectId;  // <-- Use ObjectId type here
   photo?: string;
   created_at?: Date;
   updated_at?: Date;
@@ -15,13 +16,13 @@ const UserSchema = new Schema<IUser>({
   name: { type: String, required: true, maxlength: 255 },
   email: { type: String, required: true, maxlength: 255 },
   password: { type: String, required: true, maxlength: 255 },
-  role: { type: Number, required: true },
-  photo: { type: String, maxlength: 255 }, // optional field
+  role: { type: Schema.Types.ObjectId, ref: "Role", required: true },  // <-- ref Role here
+  photo: { type: String, maxlength: 255 },
   created_at: { type: Date, default: () => new Date() },
   updated_at: { type: Date, default: () => new Date() },
 });
 
-UserSchema.pre('save', function (next) {
+UserSchema.pre("save", function (next) {
   this.updated_at = new Date();
   next();
 });

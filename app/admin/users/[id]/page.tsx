@@ -69,7 +69,9 @@ export default function UserInfoPage({
           name
           email
           photo
-          role
+          role {
+            name
+          }
         }
         getUserPosts(encrypted_id: $encrypted_id) {
           encrypted_id
@@ -232,7 +234,7 @@ export default function UserInfoPage({
                 </h2>
                 <p className="text-gray-600 text-sm">{user?.email}</p>
                 <span className="inline-block mt-2 px-3 py-1 text-sm rounded-full bg-blue-100 text-blue-700 capitalize">
-                  {user?.role === 1 ? (
+                  {user?.role.name === "admin" ? (
                     <div>Administrator</div>
                   ) : (
                     <div>User</div>
