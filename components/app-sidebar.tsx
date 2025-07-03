@@ -1,4 +1,4 @@
-import {Home, Inbox, Search, Users } from "lucide-react";
+import {Home, Inbox, Search, Users, MessageCircle } from "lucide-react";
 import {
   Sidebar,
   SidebarContent,
@@ -28,6 +28,7 @@ import { usePathname } from "next/navigation";
 const adminItems = [
   { title: "Home", url: "/admin/dashboard", icon: Home },
   { title: "Users", url: "/admin/users", icon: Users },
+  { title: "Chat", url: "/admin/chat", icon: MessageCircle },
 ];
 
 const userItems = [
