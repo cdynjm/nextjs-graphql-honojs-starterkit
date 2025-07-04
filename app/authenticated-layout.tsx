@@ -30,7 +30,7 @@ export function AuthenticatedLayout({
           </div>
         </>
       ) : (
-        <main className="flex-1">{children}</main>
+        <main className="flex-1 bg-gray-30">{children}</main>
       )}
     </SidebarProvider>
   );

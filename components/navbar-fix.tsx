@@ -2,7 +2,7 @@
 
 import { usePathname } from "next/navigation";
 import { NProgressLink } from "./ui/nprogress-link";
-import { Home, User2, Users, LucideIcon } from "lucide-react";
+import { Home, User2, Users, LucideIcon, Layers2Icon, MessageCircle } from "lucide-react";
 
 type NavItem = {
   label: string;
@@ -13,6 +13,8 @@ type NavItem = {
 const navItems: NavItem[] = [
   { label: "Home", href: "/admin/dashboard", icon: Home },
   { label: "Users", href: "/admin/users", icon: Users },
+  { label: "Chat", href: "/admin/chat", icon: MessageCircle },
+  { label: "Models", href: "/admin/train-model", icon: Layers2Icon },
   { label: "Profile", href: "/admin/profile", icon: User2 },
 ];
 

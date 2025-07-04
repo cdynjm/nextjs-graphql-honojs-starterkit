@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { signIn, getSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { NProgressLink } from "@/components/ui/nprogress-link";
@@ -11,6 +11,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import Image from "next/image";
+import { SendIcon, MessageCircle } from "lucide-react";
 
 import { redirectUserByRole } from "@/lib/redirect";
 
@@ -39,6 +40,12 @@ function Spinner() {
       ></path>
     </svg>
   );
+}
+
+interface Message {
+  sender: "user" | "ai";
+  text: string;
+  isTyping?: boolean;
 }
 
 export default function LoginPage() {
@@ -87,9 +94,142 @@ export default function LoginPage() {
     setLoading(false);
   };
 
+  const ai_endpoint = "https://ai-model.southernleyte.org.ph/chat";
+
+  const [input, setInput] = useState("");
+  const [messages, setMessages] = useState<Message[]>([]);
+  const [loadingChat, setLoadingChat] = useState(false);
+  const chatEndRef = useRef<HTMLDivElement>(null);
+
+  const scrollToBottom = () => {
+    chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
+
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages]);
+
+  const typeText = (fullText: string, callback: (text: string) => void) => {
+    let index = 0;
+    const speed = 20;
+
+    const type = () => {
+      if (index <= fullText.length) {
+        callback(fullText.slice(0, index));
+        index++;
+        setTimeout(type, speed);
+      }
+    };
+
+    type();
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!input.trim()) return;
+
+    const userMessage: Message = { sender: "user", text: input };
+    setMessages((prev) => [...prev, userMessage]);
+    setInput("");
+    setLoadingChat(true);
+
+    try {
+      const res = await fetch(ai_endpoint, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ text: userMessage.text }),
+      });
+
+      const data = await res.json();
+      const fullAIResponse = data.response || "No response from AI.";
+
+      setMessages((prev) => [
+        ...prev,
+        { sender: "ai", text: "", isTyping: true },
+      ]);
+
+      typeText(fullAIResponse, (typedText) => {
+        setMessages((prev) => {
+          const updated = [...prev];
+          const last = updated[updated.length - 1];
+          if (last && last.sender === "ai") {
+            updated[updated.length - 1] = { ...last, text: typedText };
+          }
+          return updated;
+        });
+      });
+    } catch {
+      setMessages((prev) => [
+        ...prev,
+        { sender: "ai", text: "Error fetching AI response." },
+      ]);
+    } finally {
+      setLoadingChat(false);
+    }
+  };
+
   return (
-    <div className="bg-gray-50 flex min-h-svh flex-col items-center justify-center p-6 md:p-10">
-      <div className="w-full max-w-sm md:max-w-3xl">
+    <div className="grid md:grid-cols-2 grid-cols-1 p-6 md:p-10 gap-6">
+      <Card className="shadow-none">
+        <CardContent>
+            <div className="flex flex-col items-center justify-center text-center">
+            <h1 className="text-2xl font-bold mb-4 flex items-center gap-1 text-blue-500">
+              <MessageCircle />
+              AI Chatbot
+            </h1>
+            </div>
+
+          <div className="flex-1 overflow-y-auto rounded-lg p-4">
+            {messages.length === 0 && (
+              <p className="text-center text-gray-400">
+                Start the conversation...
+              </p>
+            )}
+            {messages.map((msg, idx) => (
+              <div
+                key={idx}
+                className={`mb-3 flex ${
+                  msg.sender === "user" ? "justify-end" : "justify-start"
+                }`}
+              >
+                <div
+                  className={`max-w-[70%] px-4 py-2 rounded-lg ${
+                    msg.sender === "user"
+                      ? "bg-blue-600 text-white rounded-br-none"
+                      : "bg-gray-200 text-gray-900 rounded-bl-none"
+                  }`}
+                >
+                  {msg.text}
+                  {msg.isTyping && <span className="animate-pulse"></span>}
+                </div>
+              </div>
+            ))}
+            <div ref={chatEndRef} />
+          </div>
+
+          <form
+            onSubmit={handleSubmit}
+            className="mt-4 flex gap-2 items-center"
+          >
+            <Input
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
+              placeholder="Type something..."
+              disabled={loadingChat}
+              className="flex-1"
+            />
+            <Button
+              type="submit"
+              disabled={loadingChat}
+              className="bg-blue-600 text-white px-6 py-2 rounded disabled:opacity-50"
+            >
+              <SendIcon />
+            </Button>
+          </form>
+        </CardContent>
+      </Card>
+
+      <div className="w-full">
         <Card className="overflow-hidden p-0 shadow-none">
           <CardContent className="grid p-0 md:grid-cols-2">
             <form className="p-6 md:p-8" onSubmit={handleLogin} noValidate>
@@ -237,20 +377,21 @@ export default function LoginPage() {
                 </div>
               </div>
             </form>
-            <div className="bg-muted relative hidden md:block">
+            <div className="bg-white relative hidden md:block">
               <Image
-                src="/placeholder-image.png"
+                src="/chatbot.png"
                 width={1000}
                 height={1000}
                 alt="Logo"
                 priority
                 draggable="false"
-                className="absolute inset-0 h-full w-full object-cover dark:brightness-[0.2] dark:grayscale"
+                className="absolute inset-0 h-full w-full p-15"
               />
             </div>
           </CardContent>
         </Card>
       </div>
+      
     </div>
   );
 }
