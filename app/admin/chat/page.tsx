@@ -14,6 +14,7 @@ interface Message {
 
 export default function ChatPage() {
   const { setTitle } = usePageTitle();
+  const ai_endpoint = "https://ai-model.southernleyte.org.ph/chat"
 
   useEffect(() => {
     setTitle("AI Chat");
@@ -58,7 +59,7 @@ export default function ChatPage() {
     setLoading(true);
 
     try {
-      const res = await fetch('https://ai-model.southernleyte.org.ph/chat', {
+      const res = await fetch(ai_endpoint, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ text: userMessage.text }),

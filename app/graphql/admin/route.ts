@@ -15,7 +15,7 @@ const schema = adminSchema;
 
 const rootValue = {
   ...userResolver,
-  ...dashboardResolver,
+  ...dashboardResolver, 
 };
 
 app.post("/", async (c) => {
