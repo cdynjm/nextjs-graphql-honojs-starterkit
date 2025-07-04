@@ -31,12 +31,18 @@ export const adminSchema = buildSchema(gql`
     totalCount: Int
   }
 
+  type Datas {
+    text: String
+    label: String
+  }
+
   #queries
   type Query {
     getUsers(limit: Int, offset: Int): PaginatedUsers
     getUserInfo(encrypted_id: String): User
     getUserPosts(encrypted_id: String): [Post]
     getPosts: [Post]
+    getData: [Datas]
   }
 
 `);

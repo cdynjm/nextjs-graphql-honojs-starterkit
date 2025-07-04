@@ -49,7 +49,7 @@ export default function ${pascalName}() {
   }, [setTitle]);
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const graphQLClient = getGraphQLClient("/graphql/admin", session?.token);
+  const graphQLClient = getGraphQLClient("/graphql/admin", session?.bearer);
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const endpoint = "/api/admin/${pageName}";
 

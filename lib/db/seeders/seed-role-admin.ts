@@ -15,6 +15,11 @@ const permissionNames = [
   "create_post",
   "delete_post",
   "update_profile",
+
+  "create_data",
+  "get_data",
+
+  "create_response"
 ];
 
 async function seedRole() {

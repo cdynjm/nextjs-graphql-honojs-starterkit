@@ -7,6 +7,8 @@ import { authMiddlewareJWT } from "@/app/api/middleware/auth-middleware-jwt";
 
 import { userResolver } from "../resolver/admin/user-resolver";
 import { dashboardResolver } from "../resolver/admin/dashboard-resolver";
+import { trainModelResolver } from "../resolver/admin/train-model-resolver";
+
 
 const app = new Hono().basePath("/graphql/admin");
 app.use("*", authMiddlewareJWT);
@@ -16,6 +18,7 @@ const schema = adminSchema;
 const rootValue = {
   ...userResolver,
   ...dashboardResolver, 
+  ...trainModelResolver,
 };
 
 app.post("/", async (c) => {

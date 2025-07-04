@@ -1,4 +1,4 @@
-import {Home, Inbox, Search, Users, MessageCircle } from "lucide-react";
+import {Home, Inbox, Search, Users, MessageCircle, Layers2 } from "lucide-react";
 import {
   Sidebar,
   SidebarContent,
@@ -29,6 +29,7 @@ const adminItems = [
   { title: "Home", url: "/admin/dashboard", icon: Home },
   { title: "Users", url: "/admin/users", icon: Users },
   { title: "Chat", url: "/admin/chat", icon: MessageCircle },
+  { title: "Train Model", url: "/admin/train-model", icon: Layers2 },
 ];
 
 const userItems = [

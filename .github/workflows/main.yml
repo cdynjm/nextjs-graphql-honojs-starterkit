@@ -1,7 +1,7 @@
 on: 
   push:
     branches:
-      - nextjs-mongodb
+      - ai-model
 name: 🚀 Deploy website on push
 jobs:
   deploy:

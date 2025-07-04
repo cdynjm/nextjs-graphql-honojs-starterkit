@@ -14,7 +14,7 @@ interface Message {
 
 export default function ChatPage() {
   const { setTitle } = usePageTitle();
-  const ai_endpoint = "https://ai-model.southernleyte.org.ph/chat"
+  const ai_endpoint = "http://127.0.0.1:5000/chat"
 
   useEffect(() => {
     setTitle("AI Chat");

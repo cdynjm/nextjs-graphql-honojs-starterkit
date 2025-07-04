@@ -15,7 +15,12 @@ const permissions = [
   { name: "create_post" },
   { name: "delete_post" },
 
-  { name: "update_profile" }
+  { name: "update_profile" },
+
+  {name: "get_data"},
+  {name: "create_data"},
+
+  {name: "create_response"}
 ];
 
 async function seedPermissions() {
