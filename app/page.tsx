@@ -94,7 +94,7 @@ export default function LoginPage() {
     setLoading(false);
   };
 
-  const ai_endpoint = process.env.NEXT_PUBLIC_FLASK_AI_ENDPOINT as string;
+  const ai_endpoint = process.env.NEXT_PUBLIC_FLASK_AI_ENDPOINT_CHAT as string;
 
   const [input, setInput] = useState("");
   const [messages, setMessages] = useState<Message[]>([]);
