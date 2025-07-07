@@ -14,6 +14,7 @@ import Image from "next/image";
 import { SendIcon, MessageCircle } from "lucide-react";
 
 import { redirectUserByRole } from "@/lib/redirect";
+import TypingIndicator from "@/components/typing-indicator";
 
 // A simple loading spinner icon component (SVG)
 function Spinner() {
@@ -148,12 +149,18 @@ export default function LoginPage() {
         { sender: "ai", text: "", isTyping: true },
       ]);
 
+      await new Promise((resolve) => setTimeout(resolve, 1500));
+
       typeText(fullAIResponse, (typedText) => {
         setMessages((prev) => {
           const updated = [...prev];
           const last = updated[updated.length - 1];
           if (last && last.sender === "ai") {
-            updated[updated.length - 1] = { ...last, text: typedText };
+            updated[updated.length - 1] = {
+              ...last,
+              text: typedText,
+              isTyping: false,
+            };
           }
           return updated;
         });
@@ -172,12 +179,12 @@ export default function LoginPage() {
     <div className="grid md:grid-cols-2 grid-cols-1 p-6 md:p-10 gap-6">
       <Card className="shadow-none">
         <CardContent>
-            <div className="flex flex-col items-center justify-center text-center">
+          <div className="flex flex-col items-center justify-center text-center">
             <h1 className="text-2xl font-bold mb-4 flex items-center gap-1 text-blue-500">
               <MessageCircle />
               AI Chatbot
             </h1>
-            </div>
+          </div>
 
           <div className="flex-1 overflow-y-auto rounded-lg p-4">
             {messages.length === 0 && (
@@ -199,8 +206,7 @@ export default function LoginPage() {
                       : "bg-gray-200 text-gray-900 rounded-bl-none"
                   }`}
                 >
-                  {msg.text}
-                  {msg.isTyping && <span className="animate-pulse"></span>}
+                  {msg.isTyping ? <TypingIndicator /> : msg.text}
                 </div>
               </div>
             ))}
@@ -391,7 +397,6 @@ export default function LoginPage() {
           </CardContent>
         </Card>
       </div>
-      
     </div>
   );
 }

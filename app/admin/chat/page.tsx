@@ -1,13 +1,14 @@
-'use client';
+"use client";
 
 import { usePageTitle } from "@/components/page-title-context";
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect } from "react";
 import { Input } from "@/components/ui/input";
-import { Button } from '@/components/ui/button';
-import { SendIcon } from 'lucide-react';
+import { Button } from "@/components/ui/button";
+import { SendIcon } from "lucide-react";
+import TypingIndicator from "@/components/typing-indicator";
 
 interface Message {
-  sender: 'user' | 'ai';
+  sender: "user" | "ai";
   text: string;
   isTyping?: boolean;
 }
@@ -21,13 +22,13 @@ export default function ChatPage() {
     return () => setTitle("");
   }, [setTitle]);
 
-  const [input, setInput] = useState('');
+  const [input, setInput] = useState("");
   const [messages, setMessages] = useState<Message[]>([]);
   const [loading, setLoading] = useState(false);
   const chatEndRef = useRef<HTMLDivElement>(null);
 
   const scrollToBottom = () => {
-    chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
 
   useEffect(() => {
@@ -53,38 +54,49 @@ export default function ChatPage() {
     e.preventDefault();
     if (!input.trim()) return;
 
-    const userMessage: Message = { sender: 'user', text: input };
-    setMessages(prev => [...prev, userMessage]);
-    setInput('');
+    const userMessage: Message = { sender: "user", text: input };
+    setMessages((prev) => [...prev, userMessage]);
+    setInput("");
     setLoading(true);
 
     try {
       const res = await fetch(ai_endpoint, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ text: userMessage.text }),
       });
 
       const data = await res.json();
-      const fullAIResponse = data.response || 'No response from AI.';
+      const fullAIResponse = data.response || "No response from AI.";
 
-      setMessages(prev => [...prev, { sender: 'ai', text: '', isTyping: true }]);
+      // Add placeholder AI message with typing indicator
+      setMessages((prev) => [
+        ...prev,
+        { sender: "ai", text: "", isTyping: true },
+      ]);
 
+      // ✅ Add a short delay (1-2 sec) to show the typing indicator before actual typing starts
+      await new Promise((resolve) => setTimeout(resolve, 1500)); // 1.5 seconds
+
+      // Start typing effect
       typeText(fullAIResponse, (typedText) => {
-        setMessages(prev => {
+        setMessages((prev) => {
           const updated = [...prev];
           const last = updated[updated.length - 1];
-          if (last && last.sender === 'ai') {
-            updated[updated.length - 1] = { ...last, text: typedText };
+          if (last && last.sender === "ai") {
+            updated[updated.length - 1] = {
+              ...last,
+              text: typedText,
+              isTyping: false,
+            };
           }
           return updated;
         });
       });
-
     } catch {
-      setMessages(prev => [
+      setMessages((prev) => [
         ...prev,
-        { sender: 'ai', text: 'Error fetching AI response.' },
+        { sender: "ai", text: "Error fetching AI response." },
       ]);
     } finally {
       setLoading(false);
@@ -103,18 +115,17 @@ export default function ChatPage() {
           <div
             key={idx}
             className={`mb-3 flex ${
-              msg.sender === 'user' ? 'justify-end' : 'justify-start'
+              msg.sender === "user" ? "justify-end" : "justify-start"
             }`}
           >
             <div
               className={`max-w-[70%] px-4 py-2 rounded-lg ${
-                msg.sender === 'user'
-                  ? 'bg-blue-600 text-white rounded-br-none'
-                  : 'bg-gray-200 text-gray-900 rounded-bl-none'
+                msg.sender === "user"
+                  ? "bg-blue-600 text-white rounded-br-none"
+                  : "bg-gray-200 text-gray-900 rounded-bl-none"
               }`}
             >
-              {msg.text}
-              {msg.isTyping && <span className="animate-pulse"></span>}
+              {msg.isTyping ? <TypingIndicator /> : msg.text}
             </div>
           </div>
         ))}
