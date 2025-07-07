@@ -27,6 +27,8 @@ jobs:
           CRYPTO_SECRET_KEY: ${{ secrets.CRYPTO_SECRET_KEY }}
           BLOB_READ_WRITE_TOKEN: ${{ secrets.BLOB_READ_WRITE_TOKEN }}
           JWT_SECRET: ${{ secrets.JWT_SECRET }}
+          NEXT_PUBLIC_FLASK_AI_ENDPOINT_CHAT: ${{ secrets.NEXT_PUBLIC_FLASK_AI_ENDPOINT_CHAT }}
+          NEXT_PUBLIC_FLASK_AI_ENDPOINT_TRAIN: ${{ secrets.NEXT_PUBLIC_FLASK_AI_ENDPOINT_TRAIN }}
 
       - name: 🚀 Upload .next folder to cPanel via FTP
         run: node scripts/deploy-production.js

@@ -14,7 +14,7 @@ interface Message {
 
 export default function ChatPage() {
   const { setTitle } = usePageTitle();
-  const ai_endpoint = "https://ai-model.southernleyte.org.ph/chat"
+  const ai_endpoint = process.env.NEXT_PUBLIC_FLASK_AI_ENDPOINT_CHAT as string;
 
   useEffect(() => {
     setTitle("AI Chat");

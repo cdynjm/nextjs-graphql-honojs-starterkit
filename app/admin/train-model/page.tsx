@@ -40,8 +40,10 @@ export default function TrainModelPage() {
     return () => setTitle("");
   }, [setTitle]);
 
+
   const graphQLClient = getGraphQLClient("/graphql/admin", session?.bearer);
   const endpoint = "/api/admin/train-model";
+  const ai_endpoint = process.env.NEXT_PUBLIC_FLASK_AI_ENDPOINT_TRAIN as string;
 
   const fetchData = async (): Promise<Data[]> => {
     const query = gql`
@@ -172,7 +174,7 @@ export default function TrainModelPage() {
     setMessage("");
 
     try {
-      const response = await fetch("https://ai-model.southernleyte.org.ph/train", {
+      const response = await fetch(ai_endpoint, {
         method: "GET",
       });
 
