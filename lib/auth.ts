@@ -39,6 +39,7 @@ export const authOptions: NextAuthOptions = {
           name: user.name,
           email: user.email,
           role: user.role?._id.toString(),
+          photo: user.photo,
           roleName: user.role?.name,
           created_at: user.created_at || new Date(0),
         };
@@ -63,6 +64,8 @@ export const authOptions: NextAuthOptions = {
         token.role = user.role;
         token.roleName = user.roleName;
         token.created_at = user.created_at;
+        token.photo = user.photo;
+
         token.accessToken = process.env.NEXTAUTH_ACCESSTOKEN || "";
       } else if (token?.id) {
         await connectToDatabase();
@@ -104,6 +107,7 @@ export const authOptions: NextAuthOptions = {
         session.user.roleName = token.roleName as string;
         session.user.created_at = token.created_at as Date;
         session.token = token.accessToken as string;
+        session.user.photo = token.photo as string;
 
         function omit<T extends Record<string, unknown>, K extends keyof T>(
           obj: T,

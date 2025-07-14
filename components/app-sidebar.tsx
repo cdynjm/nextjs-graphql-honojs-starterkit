@@ -9,22 +9,16 @@ import {
   SidebarMenuItem,
   SidebarFooter,
   SidebarHeader,
+  SidebarGroupLabel
 } from "@/components/ui/sidebar";
-import { ChevronUp, User2 } from "lucide-react";
-import {
-  DropdownMenu,
-  DropdownMenuTrigger,
-  DropdownMenuContent,
-  DropdownMenuItem,
-} from "@radix-ui/react-dropdown-menu";
 import { NProgressLink } from "./ui/nprogress-link";
 import Link from "next/link";
 
 import Image from "next/image";
-import { useSession, signOut } from "next-auth/react";
+import { useSession } from "next-auth/react";
 import { usePathname } from "next/navigation";
+import { NavUser } from "./nav-user";
 
-// Admin and User menu items
 const adminItems = [
   { title: "Home", url: "/admin/dashboard", icon: Home },
   { title: "Users", url: "/admin/users", icon: Users },
@@ -48,9 +42,17 @@ const header = [
 
 export function AppSidebar() {
   const { data: session } = useSession();
-  const pathname = usePathname(); // get current path
+  const pathname = usePathname();
   const role = session?.user?.roleName ?? "user";
   const menuItems = role === "admin" ? adminItems : userItems;
+
+  const data = {
+    user: {
+    name: session?.user?.name ?? "Anonymous",
+    email: session?.user?.email ?? "no-email@example.com",
+    avatar: session?.user?.photo ?? "/avatars/shadcn.jpg",
+  },
+  }
 
   return (
     <Sidebar variant="sidebar" collapsible="icon" className="border-transparent">
@@ -74,14 +76,15 @@ export function AppSidebar() {
        
       <SidebarContent>
         <SidebarGroup>
+          <SidebarGroupLabel className="mt-[-10px]">Pages</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
               {menuItems.map((item) => {
                 const isActive = pathname === item.url;
                 return (
-                  <SidebarMenuItem key={item.title} className={isActive ? "bg-gray-200 text-gray-700 rounded-sm" : ""}>
+                  <SidebarMenuItem key={item.title} className={isActive ? "bg-black text-white rounded-sm" : ""}>
                     <SidebarMenuButton asChild>
-                      <NProgressLink href={item.url} className={`flex items-center gap-2 ${isActive ? "font-semibold" : ""}`}>
+                      <NProgressLink href={item.url} className={`flex items-center gap-2 ${isActive ? "font-semibold hover:text-white hover:bg-transparent" : "hover:text-inherit"}`}>
                         <item.icon />
                         <span>{item.title}</span>
                       </NProgressLink>
@@ -95,34 +98,7 @@ export function AppSidebar() {
       </SidebarContent>
       
       <SidebarFooter>
-        <SidebarMenu>
-          <SidebarMenuItem>
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <SidebarMenuButton>
-                  <User2 />
-                  {session?.user?.name ?? "Username"}
-                  <ChevronUp className="ml-auto" />
-                </SidebarMenuButton>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent
-                side="top"
-                align="start"
-                className="bg-white rounded-md shadow-md p-2 w-48"
-              >
-                <DropdownMenuItem className="px-3 py-2 text-sm rounded hover:bg-gray-100 cursor-pointer">
-                 <NProgressLink href="/admin/profile">Profile</NProgressLink>
-                </DropdownMenuItem>
-                <DropdownMenuItem
-                  className="px-3 py-2 rounded hover:bg-gray-100 text-sm cursor-pointer"
-                  onClick={() => signOut({callbackUrl: "/"})}
-                >
-                  Sign out
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </SidebarMenuItem>
-        </SidebarMenu>
+        <NavUser user={data.user} />
       </SidebarFooter>
     </Sidebar>
   );
