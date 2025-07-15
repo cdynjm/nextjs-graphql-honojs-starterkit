@@ -20,7 +20,7 @@ export function AuthenticatedLayout({
       {session ? (
         <>
           <AppSidebar />
-          <div className="flex flex-col w-full bg-white md:m-2 shadow rounded-md">
+          <div className="flex flex-col w-full bg-white md:m-2 shadow rounded-lg">
             <PageTitleProvider>
               <AppTopbar />
               <main className="flex-1 md:mb-0 mb-12">{children}</main>

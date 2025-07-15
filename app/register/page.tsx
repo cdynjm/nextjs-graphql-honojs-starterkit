@@ -2,19 +2,10 @@
 
 import { useState, useRef } from "react";
 import { useRouter } from "next/navigation";
-import { Eye, EyeOff, UploadCloud } from "lucide-react";
+import { Eye, EyeOff, UploadCloud, GalleryVerticalEnd } from "lucide-react";
 import { upload } from "@vercel/blob/client";
 import { NProgressLink } from "@/components/ui/nprogress-link";
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardAction,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardFooter,
-  CardTitle,
-} from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import Image from "next/image";
@@ -107,7 +98,7 @@ export default function RegisterPage() {
         setSubmitError(data.message || "Registration failed.");
         return;
       }
-      
+
       router.push("/");
     } catch (err) {
       console.error(err);
@@ -118,150 +109,178 @@ export default function RegisterPage() {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gray-50 px-4">
-      <Card className="w-full max-w-sm shadow-none">
-        <CardHeader>
-          <CardTitle>Create your account</CardTitle>
-          <CardDescription>
-            Fill in the details below to register
-          </CardDescription>
-          <CardAction>
-            <NProgressLink href="/">
-              <Button variant="link">Login</Button>
-            </NProgressLink>
-          </CardAction>
-        </CardHeader>
-        <CardContent>
-          <form onSubmit={handleSubmit} noValidate>
-            <div className="flex flex-col gap-6 mb-4">
-              {/* Avatar Preview */}
-              <div className="grid gap-2">
-                <Label htmlFor="avatar">Profile Image</Label>
-                <div
-                  className="flex items-center gap-4 cursor-pointer"
-                  onClick={() => fileInputRef.current?.click()}
-                >
-                  {preview ? (
-                    <Image
-                      src={preview}
-                      alt="Preview"
-                      width={48}
-                      height={48}
-                      className="rounded-full border"
-                    />
-                  ) : (
-                    <div className="w-12 h-12 border rounded-full bg-gray-100 flex items-center justify-center text-gray-500">
-                      <UploadCloud size={20} />
-                    </div>
-                  )}
-                  <span className="text-sm text-gray-600">
-                    {selectedFile ? "Image Preview" : "Click to choose image"}
-                  </span>
+    <>
+      <div className="grid min-h-svh lg:grid-cols-2 bg-white">
+        <div className="flex flex-col gap-4 p-6 md:p-10">
+          <div className="flex justify-center gap-2 md:justify-start">
+            <a href="#" className="flex items-center gap-2 font-medium">
+              <div className="bg-primary text-primary-foreground flex size-6 items-center justify-center rounded-md">
+                <GalleryVerticalEnd className="size-4" />
+              </div>
+              Acme Inc.
+            </a>
+          </div>
+          <div className="flex flex-1 items-center justify-center">
+            <div className="w-full max-w-xs">
+              <div className="mb-6 flex flex-col gap-1">
+                <div className="flex justify-between items-start">
+                  <div>
+                    <h2 className="text-lg font-semibold">
+                      Create your account
+                    </h2>
+                    <p className="text-sm text-muted-foreground">
+                      Fill in the details below to register
+                    </p>
+                  </div>
+                  <NProgressLink
+                    href="/"
+                    className="text-sm font-semibold underline underline-offset-3 mt-2"
+                  >
+                    Login
+                  </NProgressLink>
                 </div>
-                <input
-                  type="file"
-                  ref={fileInputRef}
-                  className="hidden"
-                  accept="image/*"
-                  onChange={(e) => {
-                    const file = e.target.files?.[0];
-                    if (file) {
-                      setSelectedFile(file);
-                      setPreview(URL.createObjectURL(file));
-                    }
-                  }}
-                />
               </div>
 
-              {/* Name */}
-              <div className="grid gap-2">
-                <Label htmlFor="name">Name</Label>
-                <Input
-                  id="name"
-                  type="text"
-                  value={form.name}
-                  onChange={(e) => setForm({ ...form, name: e.target.value })}
-                  className={formErrors.name ? "border-red-600" : ""}
-                />
-                {formErrors.name && (
-                  <p className="text-sm text-red-600">{formErrors.name}</p>
+              <form onSubmit={handleSubmit} noValidate>
+                <div className="flex flex-col gap-6 mb-6">
+                  {/* Avatar Preview */}
+                  <div className="grid gap-2">
+                    <Label htmlFor="avatar" className="mb-2">
+                      Profile Image
+                    </Label>
+                    <div
+                      className="flex items-center gap-4 cursor-pointer"
+                      onClick={() => fileInputRef.current?.click()}
+                    >
+                      {preview ? (
+                        <Image
+                          src={preview}
+                          alt="Preview"
+                          width={48}
+                          height={48}
+                          className="rounded-full border"
+                        />
+                      ) : (
+                        <div className="w-12 h-12 border rounded-full bg-gray-100 flex items-center justify-center text-gray-500">
+                          <UploadCloud size={20} />
+                        </div>
+                      )}
+                      <span className="text-sm text-gray-600">
+                        {selectedFile
+                          ? "Image Preview"
+                          : "Click to choose image"}
+                      </span>
+                    </div>
+                    <input
+                      type="file"
+                      ref={fileInputRef}
+                      className="hidden"
+                      accept="image/*"
+                      onChange={(e) => {
+                        const file = e.target.files?.[0];
+                        if (file) {
+                          setSelectedFile(file);
+                          setPreview(URL.createObjectURL(file));
+                        }
+                      }}
+                    />
+                  </div>
+
+                  {/* Name */}
+                  <div className="grid gap-2">
+                    <Label htmlFor="name">Name</Label>
+                    <Input
+                      id="name"
+                      type="text"
+                      value={form.name}
+                      onChange={(e) =>
+                        setForm({ ...form, name: e.target.value })
+                      }
+                      className={formErrors.name ? "border-red-600" : ""}
+                    />
+                    {formErrors.name && (
+                      <p className="text-sm text-red-600">{formErrors.name}</p>
+                    )}
+                  </div>
+
+                  {/* Email */}
+                  <div className="grid gap-2">
+                    <Label htmlFor="email">Email</Label>
+                    <Input
+                      id="email"
+                      type="email"
+                      value={form.email}
+                      onChange={(e) =>
+                        setForm({ ...form, email: e.target.value })
+                      }
+                      className={formErrors.email ? "border-red-600" : ""}
+                    />
+                    {formErrors.email && (
+                      <p className="text-sm text-red-600">{formErrors.email}</p>
+                    )}
+                  </div>
+
+                  {/* Password */}
+                  <div className="grid gap-2 relative">
+                    <Label htmlFor="password">Password</Label>
+                    <Input
+                      id="password"
+                      type={showPassword ? "text" : "password"}
+                      value={form.password}
+                      onChange={(e) =>
+                        setForm({ ...form, password: e.target.value })
+                      }
+                      className={formErrors.password ? "border-red-600" : ""}
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword(!showPassword)}
+                      className="absolute right-3 top-[30px] text-gray-500 hover:text-gray-700"
+                      aria-label={
+                        showPassword ? "Hide password" : "Show password"
+                      }
+                    >
+                      {showPassword ? (
+                        <EyeOff className="w-5 h-auto" />
+                      ) : (
+                        <Eye className="w-5 h-auto" />
+                      )}
+                    </button>
+                    {formErrors.password && (
+                      <p className="text-sm text-red-600">
+                        {formErrors.password}
+                      </p>
+                    )}
+                  </div>
+                </div>
+
+                {submitError && (
+                  <p className="mb-4 text-sm text-red-600">{submitError}</p>
                 )}
-              </div>
 
-              {/* Email */}
-              <div className="grid gap-2">
-                <Label htmlFor="email">Email</Label>
-                <Input
-                  id="email"
-                  type="email"
-                  value={form.email}
-                  onChange={(e) => setForm({ ...form, email: e.target.value })}
-                  className={formErrors.email ? "border-red-600" : ""}
-                />
-                {formErrors.email && (
-                  <p className="text-sm text-red-600">{formErrors.email}</p>
-                )}
-              </div>
-
-              {/* Password */}
-              <div className="grid gap-2 relative">
-                <Label htmlFor="password">Password</Label>
-                <Input
-                  id="password"
-                  type={showPassword ? "text" : "password"}
-                  value={form.password}
-                  onChange={(e) =>
-                    setForm({ ...form, password: e.target.value })
-                  }
-                  className={formErrors.password ? "border-red-600" : ""}
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-[30px] text-gray-500 hover:text-gray-700"
-                  aria-label={showPassword ? "Hide password" : "Show password"}
+                <Button
+                  type="submit"
+                  className="w-full flex items-center justify-center"
+                  disabled={loading}
                 >
-                  {showPassword ? (
-                    <EyeOff className="w-5 h-auto" />
-                  ) : (
-                    <Eye className="w-5 h-auto" />
-                  )}
-                </button>
-                {formErrors.password && (
-                  <p className="text-sm text-red-600">{formErrors.password}</p>
-                )}
-              </div>
+                  {loading && <Spinner />}
+                  {loading ? "Registering..." : "Register"}
+                </Button>
+              </form>
             </div>
-
-            {submitError && (
-              <p className="mb-4 text-sm text-red-600">{submitError}</p>
-            )}
-
-            <Button
-              type="submit"
-              className="w-full flex items-center justify-center"
-              disabled={loading}
-            >
-              {loading && <Spinner />}
-              {loading ? "Registering..." : "Register"}
-            </Button>
-          </form>
-        </CardContent>
-        <CardFooter className="text-center flex flex-col justify-center">
-          <small className="font-semibold flex items-center gap-2">
-            <Image src="/logo.png" width={24} height={24} alt="Logo" priority />
-            JEM CDYN, Dev.
-          </small>
-          <a
-            href="https://jemcdyn.vercel.app/"
-            target="_blank"
-            className="text-[12px]"
-            rel="noreferrer"
-          >
-            https://jemcdyn.vercel.app/
-          </a>
-        </CardFooter>
-      </Card>
-    </div>
+          </div>
+        </div>
+        <div className="bg-muted relative hidden lg:block">
+          <Image
+            src="/placeholder-image.png"
+            width={24}
+            height={24}
+            alt="Logo"
+            priority
+            className="absolute inset-0 h-full w-full object-cover dark:brightness-[0.2] dark:grayscale"
+          />
+        </div>
+      </div>
+    </>
   );
 }

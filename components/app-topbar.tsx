@@ -14,6 +14,7 @@ import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { UserCircle2, LogOutIcon } from "lucide-react";
 import { usePageTitle } from "./page-title-context";
 import { NProgressLink } from "./ui/nprogress-link";
+import { Separator } from "./ui/separator";
 
 export function AppTopbar() {
   const { data: session } = useSession();
@@ -23,8 +24,12 @@ export function AppTopbar() {
     <header className="w-full h-16 px-4 flex items-center justify-between bg-white border-b rounded-t-md">
       <div className="flex items-center gap-1">
         {/* Sidebar toggle button */}
-        <SidebarTrigger />
-        <span className="text-[16px] font-semibold mb-[2px]">{title}</span>
+        <SidebarTrigger className="ml-1" />
+        <Separator
+          orientation="vertical"
+          className="ml-0 mr-2 data-[orientation=vertical]:h-4"
+        />
+        <span className="text-[14px] font-semibold mb-[2px]">{title}</span>
       </div>
 
       <DropdownMenu>

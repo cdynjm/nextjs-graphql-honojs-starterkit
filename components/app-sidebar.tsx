@@ -1,4 +1,4 @@
-import {Home, Inbox, Search, Users, MessageCircle } from "lucide-react";
+import {Home, Inbox, Search, Users, MessageCircle, GalleryVerticalEnd, AudioWaveform, Command } from "lucide-react";
 import {
   Sidebar,
   SidebarContent,
@@ -12,12 +12,11 @@ import {
   SidebarGroupLabel
 } from "@/components/ui/sidebar";
 import { NProgressLink } from "./ui/nprogress-link";
-import Link from "next/link";
 
-import Image from "next/image";
 import { useSession } from "next-auth/react";
 import { usePathname } from "next/navigation";
 import { NavUser } from "./nav-user";
+import { AppHeader } from "./app-header";
 
 const adminItems = [
   { title: "Home", url: "/admin/dashboard", icon: Home },
@@ -29,15 +28,6 @@ const userItems = [
   { title: "Home", url: "/", icon: Home },
   { title: "Inbox", url: "/inbox", icon: Inbox },
   { title: "Search", url: "/search", icon: Search },
-];
-
-const header = [
-  {
-    title: "Sample App",
-    subTitle: "NextJS Starter Kit",
-    url: "/",
-    image: "/nextjs.png",
-  },
 ];
 
 export function AppSidebar() {
@@ -52,28 +42,30 @@ export function AppSidebar() {
     email: session?.user?.email ?? "no-email@example.com",
     avatar: session?.user?.photo ?? "/avatars/shadcn.jpg",
   },
+  teams: [
+    {
+      name: "Acme Inc",
+      logo: GalleryVerticalEnd ?? "",
+      plan: "Enterprise",
+    },
+    {
+      name: "Acme Corp.",
+      logo: AudioWaveform ?? "",
+      plan: "Startup",
+    },
+    {
+      name: "Evil Corp.",
+      logo: Command ?? "",
+      plan: "Free",
+    },
+  ],
   }
 
   return (
     <Sidebar variant="sidebar" collapsible="icon" className="border-transparent">
-      <SidebarHeader>
-        <SidebarMenu>
-          {header.map((head) => (
-            <SidebarMenuItem key={head.title}>
-              <SidebarMenuButton asChild>
-                <Link href={head.url} className="mt-3 flex items-center gap-2">
-                  <Image src={head.image} width={35} height={35} alt="Logo" />
-                  <div className="ml-1">
-                    <div className="font-bold">{head.title}</div>
-                    <small>{head.subTitle}</small>
-                  </div>
-                </Link>
-              </SidebarMenuButton>
-            </SidebarMenuItem>
-          ))}
-        </SidebarMenu>
+      <SidebarHeader className="mt-2">
+        <AppHeader teams={data.teams} />
       </SidebarHeader>
-       
       <SidebarContent>
         <SidebarGroup>
           <SidebarGroupLabel className="mt-[-10px]">Pages</SidebarGroupLabel>
