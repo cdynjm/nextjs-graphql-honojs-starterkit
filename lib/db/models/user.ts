@@ -6,7 +6,7 @@ interface IUser extends Document {
   name: string;
   email: string;
   password: string;
-  role?: Types.ObjectId;  // <-- Use ObjectId type here
+  role?: Types.ObjectId; 
   photo?: string;
   created_at?: Date;
   updated_at?: Date;
@@ -16,7 +16,7 @@ const UserSchema = new Schema<IUser>({
   name: { type: String, required: true, maxlength: 255 },
   email: { type: String, required: true, maxlength: 255 },
   password: { type: String, required: true, maxlength: 255 },
-  role: { type: Schema.Types.ObjectId, ref: "Role", required: true },  // <-- ref Role here
+  role: { type: Schema.Types.ObjectId, ref: "Role", required: true },
   photo: { type: String, maxlength: 255 },
   created_at: { type: Date, default: () => new Date() },
   updated_at: { type: Date, default: () => new Date() },

@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import bcrypt from "bcrypt";
-import { connectToDatabase } from "@/lib/db/mongodb"; // adjust path to your MongoDB connection function
+import { connectToDatabase } from "@/lib/db/mongodb";
 import { User } from "@/lib/db/models/user";
 import { Role } from "@/lib/db/models/role";
 
