@@ -34,11 +34,17 @@ export default async function RootLayout({
 
   return (
     <html lang="en">
-      <body className={`${geistSans.variable} ${geistMono.variable} antialiased bg-gray-50`}>
+      <body
+        className={`${geistSans.variable} ${geistMono.variable} antialiased bg-gray-50`}
+      >
         <Providers session={session}>
           <NProgressProvider />
           {/* Use client side session-aware layout */}
-          <AuthenticatedLayout>{children}</AuthenticatedLayout>
+          {session ? (
+            <AuthenticatedLayout>{children}</AuthenticatedLayout>
+          ) : (
+            <main className="flex-1">{children}</main>
+          )}
         </Providers>
       </body>
     </html>

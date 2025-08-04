@@ -256,7 +256,7 @@ console.log(`✅ Created seeder: ${seederFilename}`);
 const redirectPath = path.join("lib/redirect.ts");
 let redirectContent = fs.readFileSync(redirectPath, "utf8");
 
-const newCase = `\n    case "${safeRole}":\n      router.push("/${safeRole}/dashboard");\n      break;`;
+const newCase = `\n    case "${safeRole}":\n      window.location.assign("/${safeRole}/dashboard");\n      break;`;
 
 // Regex to find the last `case` in switch
 const switchRegex = /switch\s*\(role\)\s*{([\s\S]*?)default:/m;
