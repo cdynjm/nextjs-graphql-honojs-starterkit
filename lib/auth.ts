@@ -8,6 +8,7 @@ import { signJwt } from "./jwt";
 import { generateKey, encrypt } from "./crypto";
 import { User as UserCollection } from "@/types/user";
 import { Role as RoleCollection } from "@/types/role";
+import type { SessionStrategy } from "next-auth";
 
 export const authOptions: NextAuthOptions = {
   providers: [
@@ -48,12 +49,12 @@ export const authOptions: NextAuthOptions = {
   ],
 
   session: {
-    strategy: "jwt",
-    maxAge: 60 * 120,
-    updateAge: 0,
+    strategy: process.env.SESSION_STRATEGY as SessionStrategy,
+    maxAge: parseInt(process.env.SESSION_MAXAGE || "7200"),
+    updateAge: parseInt(process.env.SESSION_UPDATEAGE || "0"),
   },
   jwt: {
-    maxAge: 60 * 120,
+    maxAge: parseInt(process.env.SESSION_MAXAGE || "7200"),
   },
   callbacks: {
     async jwt({ token, user }) {
