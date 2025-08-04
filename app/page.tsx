@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { signIn, getSession } from "next-auth/react";
+import { signIn, getSession, useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { NProgressLink } from "@/components/ui/nprogress-link";
 import { Eye, EyeOff, GalleryVerticalEnd } from "lucide-react";
@@ -41,6 +41,7 @@ function Spinner() {
 }
 
 export default function LoginPage() {
+  const { data: session } = useSession();
   const [form, setForm] = useState({ email: "", password: "" });
   const [formErrors, setFormErrors] = useState<{
     email?: string;
@@ -172,10 +173,14 @@ export default function LoginPage() {
                     </p>
                   )}
 
+                  {session && (
+                    <p className="text-sm text-green-600 my-[-10px]">Authentication is successful, please wait ...</p> 
+                  )}
+
                   <Button
                     type="submit"
                     className="w-full flex items-center justify-center"
-                    disabled={loading}
+                    disabled={loading || !!session}
                   >
                     {loading && <Spinner />}
                     {loading ? "Logging in..." : "Login"}
